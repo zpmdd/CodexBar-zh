@@ -67,7 +67,7 @@ struct PreferencesView: View {
     var body: some View {
         TabView(selection: self.$selection.tab) {
             GeneralPane(settings: self.settings, store: self.store)
-                .tabItem { Label("General", systemImage: "gearshape") }
+                .tabItem { Label(L("General"), systemImage: "gearshape") }
                 .tag(PreferencesTab.general)
 
             ProvidersPane(
@@ -75,24 +75,24 @@ struct PreferencesView: View {
                 store: self.store,
                 managedCodexAccountCoordinator: self.managedCodexAccountCoordinator,
                 codexAccountPromotionCoordinator: self.codexAccountPromotionCoordinator)
-                .tabItem { Label("Providers", systemImage: "square.grid.2x2") }
+                .tabItem { Label(L("Providers"), systemImage: "square.grid.2x2") }
                 .tag(PreferencesTab.providers)
 
             DisplayPane(settings: self.settings, store: self.store)
-                .tabItem { Label("Display", systemImage: "eye") }
+                .tabItem { Label(L("Display"), systemImage: "eye") }
                 .tag(PreferencesTab.display)
 
             AdvancedPane(settings: self.settings)
-                .tabItem { Label("Advanced", systemImage: "slider.horizontal.3") }
+                .tabItem { Label(L("Advanced"), systemImage: "slider.horizontal.3") }
                 .tag(PreferencesTab.advanced)
 
             AboutPane(updater: self.updater)
-                .tabItem { Label("About", systemImage: "info.circle") }
+                .tabItem { Label(L("About"), systemImage: "info.circle") }
                 .tag(PreferencesTab.about)
 
             if self.settings.debugMenuEnabled {
                 DebugPane(settings: self.settings, store: self.store)
-                    .tabItem { Label("Debug", systemImage: "ladybug") }
+                    .tabItem { Label(L("Debug"), systemImage: "ladybug") }
                     .tag(PreferencesTab.debug)
             }
         }
@@ -125,7 +125,7 @@ struct PreferencesView: View {
     }
 
     private static let settingsWindowIdentifier = "com_apple_SwiftUI_Settings_window"
-    private static let knownTabTitles = Set(PreferencesTab.allCases.map(\.title))
+    private static let knownTabTitles = Set(PreferencesTab.allCases.flatMap { [$0.title, L($0.title)] })
 
     private static func resizeSettingsWindow(width: CGFloat, height: CGFloat, animate: Bool) {
         guard let window = NSApp.windows.first(where: {

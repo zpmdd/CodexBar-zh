@@ -99,7 +99,7 @@ struct ProvidersPane: View {
                         }
                     })
             } else {
-                Text("Select a provider")
+                LText("Select a provider")
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
@@ -115,7 +115,7 @@ struct ProvidersPane: View {
             self.runSettingsDidBecomeActiveHooks()
         }
         .alert(
-            self.activeConfirmation?.title ?? "",
+            L(self.activeConfirmation?.title ?? ""),
             isPresented: Binding(
                 get: { self.activeConfirmation != nil },
                 set: { isPresented in
@@ -123,16 +123,16 @@ struct ProvidersPane: View {
                 }),
             actions: {
                 if let active = self.activeConfirmation {
-                    Button(active.confirmTitle) {
+                    Button(L(active.confirmTitle)) {
                         active.onConfirm()
                         self.activeConfirmation = nil
                     }
-                    Button("Cancel", role: .cancel) { self.activeConfirmation = nil }
+                    Button(L("Cancel"), role: .cancel) { self.activeConfirmation = nil }
                 }
             },
             message: {
                 if let active = self.activeConfirmation {
-                    Text(active.message)
+                    LText(active.message)
                 }
             })
     }

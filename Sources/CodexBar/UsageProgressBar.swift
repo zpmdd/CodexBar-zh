@@ -69,7 +69,7 @@ struct UsageProgressBar: View {
             }
         }
         .frame(height: 6)
-        .accessibilityLabel(self.accessibilityLabel)
+        .accessibilityLabel(L(self.accessibilityLabel))
         .accessibilityValue("\(Int(self.clamped)) percent")
     }
 

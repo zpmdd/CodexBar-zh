@@ -11,7 +11,7 @@ struct GeneralPane: View {
         ScrollView(.vertical, showsIndicators: true) {
             VStack(alignment: .leading, spacing: 16) {
                 SettingsSection(contentSpacing: 12) {
-                    Text("System")
+                    LText("System")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)
@@ -24,7 +24,7 @@ struct GeneralPane: View {
                 Divider()
 
                 SettingsSection(contentSpacing: 12) {
-                    Text("Usage")
+                    LText("Usage")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)
@@ -32,18 +32,18 @@ struct GeneralPane: View {
                     VStack(alignment: .leading, spacing: 10) {
                         VStack(alignment: .leading, spacing: 4) {
                             Toggle(isOn: self.$settings.costUsageEnabled) {
-                                Text("Show cost summary")
+                                LText("Show cost summary")
                                     .font(.body)
                             }
                             .toggleStyle(.checkbox)
 
-                            Text("Reads local usage logs. Shows today + last 30 days cost in the menu.")
+                            LText("Reads local usage logs. Shows today + last 30 days cost in the menu.")
                                 .font(.footnote)
                                 .foregroundStyle(.tertiary)
                                 .fixedSize(horizontal: false, vertical: true)
 
                             if self.settings.costUsageEnabled {
-                                Text("Auto-refresh: hourly · Timeout: 10m")
+                                LText("Auto-refresh: hourly · Timeout: 10m")
                                     .font(.footnote)
                                     .foregroundStyle(.tertiary)
 
@@ -57,23 +57,23 @@ struct GeneralPane: View {
                 Divider()
 
                 SettingsSection(contentSpacing: 12) {
-                    Text("Automation")
+                    LText("Automation")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)
                     VStack(alignment: .leading, spacing: 6) {
                         HStack(alignment: .top, spacing: 12) {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Refresh cadence")
+                                LText("Refresh cadence")
                                     .font(.body)
-                                Text("How often CodexBar polls providers in the background.")
+                                LText("How often CodexBar polls providers in the background.")
                                     .font(.footnote)
                                     .foregroundStyle(.tertiary)
                             }
                             Spacer()
-                            Picker("Refresh cadence", selection: self.$settings.refreshFrequency) {
+                            Picker(L("Refresh cadence"), selection: self.$settings.refreshFrequency) {
                                 ForEach(RefreshFrequency.allCases) { option in
-                                    Text(option.label).tag(option)
+                                    LText(option.label).tag(option)
                                 }
                             }
                             .labelsHidden()
@@ -81,7 +81,7 @@ struct GeneralPane: View {
                             .frame(maxWidth: 200)
                         }
                         if self.settings.refreshFrequency == .manual {
-                            Text("Auto-refresh is off; use the menu's Refresh command.")
+                            LText("Auto-refresh is off; use the menu's Refresh command.")
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                         }
@@ -103,7 +103,7 @@ struct GeneralPane: View {
                 SettingsSection(contentSpacing: 12) {
                     HStack {
                         Spacer()
-                        Button("Quit CodexBar") { NSApp.terminate(nil) }
+                        Button(L("Quit CodexBar")) { NSApp.terminate(nil) }
                             .buttonStyle(.borderedProminent)
                             .controlSize(.large)
                     }
@@ -119,7 +119,7 @@ struct GeneralPane: View {
         let name = ProviderDescriptorRegistry.descriptor(for: provider).metadata.displayName
 
         guard provider == .claude || provider == .codex else {
-            return Text("\(name): unsupported")
+            return LText("\(name): unsupported")
                 .font(.footnote)
                 .foregroundStyle(.tertiary)
         }
@@ -133,20 +133,20 @@ struct GeneralPane: View {
                 formatter.unitsStyle = .abbreviated
                 return formatter.string(from: seconds).map { " (\($0))" } ?? ""
             }()
-            return Text("\(name): fetching…\(elapsed)")
+            return LText("\(name): fetching…\(elapsed)")
                 .font(.footnote)
                 .foregroundStyle(.tertiary)
         }
         if let snapshot = self.store.tokenSnapshot(for: provider) {
             let updated = UsageFormatter.updatedString(from: snapshot.updatedAt)
             let cost = snapshot.last30DaysCostUSD.map { UsageFormatter.usdString($0) } ?? "—"
-            return Text("\(name): \(updated) · 30d \(cost)")
+            return LText("\(name): \(updated) · 30d \(cost)")
                 .font(.footnote)
                 .foregroundStyle(.tertiary)
         }
         if let error = self.store.tokenError(for: provider), !error.isEmpty {
             let truncated = UsageFormatter.truncatedSingleLine(error, max: 120)
-            return Text("\(name): \(truncated)")
+            return LText("\(name): \(truncated)")
                 .font(.footnote)
                 .foregroundStyle(.tertiary)
         }
@@ -154,11 +154,11 @@ struct GeneralPane: View {
             let rel = RelativeDateTimeFormatter()
             rel.unitsStyle = .abbreviated
             let when = rel.localizedString(for: lastAttempt, relativeTo: Date())
-            return Text("\(name): last attempt \(when)")
+            return LText("\(name): last attempt \(when)")
                 .font(.footnote)
                 .foregroundStyle(.tertiary)
         }
-        return Text("\(name): no data yet")
+        return LText("\(name): no data yet")
             .font(.footnote)
             .foregroundStyle(.tertiary)
     }

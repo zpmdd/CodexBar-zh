@@ -3,11 +3,13 @@ set -euo pipefail
 CONF=${1:-release}
 ALLOW_LLDB=${CODEXBAR_ALLOW_LLDB:-0}
 SIGNING_MODE=${CODEXBAR_SIGNING:-}
+SKIP_WIDGET=${CODEXBAR_SKIP_WIDGET:-0}
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 
 # Load version info
 source "$ROOT/version.env"
+APP_NAME=${CODEXBAR_APP_NAME:-CodexBar}
 
 # Clean build only when explicitly requested (slower).
 if [[ "${CODEXBAR_FORCE_CLEAN:-0}" == "1" ]]; then
@@ -36,6 +38,44 @@ fi
 
 patch_keyboard_shortcuts() {
   local util_path="$ROOT/.build/checkouts/KeyboardShortcuts/Sources/KeyboardShortcuts/Utilities.swift"
+  local recorder_path="$ROOT/.build/checkouts/KeyboardShortcuts/Sources/KeyboardShortcuts/Recorder.swift"
+  if [[ ! -f "$util_path" && ! -f "$recorder_path" ]]; then
+    return 0
+  fi
+
+  if [[ -f "$recorder_path" ]] && grep -q "#Preview" "$recorder_path"; then
+    chmod +w "$recorder_path" || true
+    python3 - "$recorder_path" <<'PY'
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+text = path.read_text()
+
+preview_blocks = """
+#Preview {
+\tKeyboardShortcuts.Recorder("record_shortcut", name: .init("xcodePreview"))
+\t\t.environment(\\.locale, .init(identifier: "en"))
+}
+
+#Preview {
+\tKeyboardShortcuts.Recorder("record_shortcut", name: .init("xcodePreview"))
+\t\t.environment(\\.locale, .init(identifier: "zh-Hans"))
+}
+
+#Preview {
+\tKeyboardShortcuts.Recorder("record_shortcut", name: .init("xcodePreview"))
+\t\t.environment(\\.locale, .init(identifier: "ru"))
+}
+"""
+
+if preview_blocks not in text:
+    raise SystemExit("Preview marker not found in Recorder.swift; patch failed.")
+
+path.write_text(text.replace(preview_blocks, ""))
+PY
+  fi
+
   if [[ ! -f "$util_path" ]]; then
     return 0
   fi
@@ -180,7 +220,7 @@ generate_widget_appintents_metadata() {
 
 KEYBOARD_SHORTCUTS_UTIL="$ROOT/.build/checkouts/KeyboardShortcuts/Sources/KeyboardShortcuts/Utilities.swift"
 if [[ ! -f "$KEYBOARD_SHORTCUTS_UTIL" ]]; then
-  swift build -c "$CONF" --arch "${ARCH_LIST[0]}"
+  swift package resolve
 fi
 patch_keyboard_shortcuts
 
@@ -188,7 +228,7 @@ for ARCH in "${ARCH_LIST[@]}"; do
   swift build -c "$CONF" --arch "$ARCH"
 done
 
-APP="$ROOT/CodexBar.app"
+APP="$ROOT/${APP_NAME}.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
 mkdir -p "$APP/Contents/Helpers" "$APP/Contents/PlugIns"
@@ -262,8 +302,8 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleName</key><string>CodexBar</string>
-    <key>CFBundleDisplayName</key><string>CodexBar</string>
+    <key>CFBundleName</key><string>${APP_NAME}</string>
+    <key>CFBundleDisplayName</key><string>${APP_NAME}</string>
     <key>CFBundleIdentifier</key><string>${BUNDLE_ID}</string>
     <key>CFBundleExecutable</key><string>CodexBar</string>
     <key>CFBundlePackageType</key><string>APPL</string>
@@ -358,7 +398,7 @@ fi
 if [[ -n "$(resolve_binary_path "CodexBarClaudeWatchdog" "${ARCH_LIST[0]}")" ]]; then
   install_binary "CodexBarClaudeWatchdog" "$APP/Contents/Helpers/CodexBarClaudeWatchdog"
 fi
-if [[ -n "$(resolve_binary_path "CodexBarWidget" "${ARCH_LIST[0]}")" ]]; then
+if [[ "$SKIP_WIDGET" != "1" && -n "$(resolve_binary_path "CodexBarWidget" "${ARCH_LIST[0]}")" ]]; then
   WIDGET_APP="$APP/Contents/PlugIns/CodexBarWidget.appex"
   mkdir -p "$WIDGET_APP/Contents/MacOS" "$WIDGET_APP/Contents/Resources"
   cat > "$WIDGET_APP/Contents/Info.plist" <<PLIST
@@ -367,7 +407,7 @@ if [[ -n "$(resolve_binary_path "CodexBarWidget" "${ARCH_LIST[0]}")" ]]; then
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key><string>CodexBarWidget</string>
-    <key>CFBundleDisplayName</key><string>CodexBar</string>
+    <key>CFBundleDisplayName</key><string>${APP_NAME}</string>
     <key>CFBundleIdentifier</key><string>${WIDGET_BUNDLE_ID}</string>
     <key>CFBundleExecutable</key><string>CodexBarWidget</string>
     <key>CFBundlePackageType</key><string>XPC!</string>

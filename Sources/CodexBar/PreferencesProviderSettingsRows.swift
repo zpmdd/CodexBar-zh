@@ -23,7 +23,7 @@ struct ProviderSettingsSection<Content: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: self.spacing) {
-            Text(self.title)
+            LText(self.title)
                 .font(.headline)
             self.content()
         }
@@ -41,9 +41,9 @@ struct ProviderSettingsToggleRowView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .firstTextBaseline, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(self.toggle.title)
+                    LText(self.toggle.title)
                         .font(.subheadline.weight(.semibold))
-                    Text(self.toggle.subtitle)
+                    LText(self.toggle.subtitle)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -56,7 +56,7 @@ struct ProviderSettingsToggleRowView: View {
 
             if self.toggle.binding.wrappedValue {
                 if let status = self.toggle.statusText?(), !status.isEmpty {
-                    Text(status)
+                    LText(status)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .lineLimit(4)
@@ -67,7 +67,7 @@ struct ProviderSettingsToggleRowView: View {
                 if !actions.isEmpty {
                     HStack(spacing: 10) {
                         ForEach(actions) { action in
-                            Button(action.title) {
+                            Button(L(action.title)) {
                                 Task { @MainActor in
                                     await action.perform()
                                 }
@@ -101,13 +101,13 @@ struct ProviderSettingsPickerRowView: View {
         let isEnabled = self.picker.isEnabled?() ?? true
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .firstTextBaseline, spacing: 10) {
-                Text(self.picker.title)
+                LText(self.picker.title)
                     .font(.subheadline.weight(.semibold))
                     .frame(width: ProviderSettingsMetrics.pickerLabelWidth, alignment: .leading)
 
                 Picker("", selection: self.picker.binding) {
                     ForEach(self.picker.options) { option in
-                        Text(option.title).tag(option.id)
+                        LText(option.title).tag(option.id)
                     }
                 }
                 .labelsHidden()
@@ -115,7 +115,7 @@ struct ProviderSettingsPickerRowView: View {
                 .controlSize(.small)
 
                 if let trailingText = self.picker.trailingText?(), !trailingText.isEmpty {
-                    Text(trailingText)
+                    LText(trailingText)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -128,7 +128,7 @@ struct ProviderSettingsPickerRowView: View {
 
             let subtitle = self.picker.dynamicSubtitle?() ?? self.picker.subtitle
             if !subtitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                Text(subtitle)
+                LText(subtitle)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -157,11 +157,11 @@ struct ProviderSettingsFieldRowView: View {
             if hasHeader {
                 VStack(alignment: .leading, spacing: 4) {
                     if !trimmedTitle.isEmpty {
-                        Text(trimmedTitle)
+                        LText(trimmedTitle)
                             .font(.subheadline.weight(.semibold))
                     }
                     if !trimmedSubtitle.isEmpty {
-                        Text(trimmedSubtitle)
+                        LText(trimmedSubtitle)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -171,12 +171,12 @@ struct ProviderSettingsFieldRowView: View {
 
             switch self.field.kind {
             case .plain:
-                TextField(self.field.placeholder ?? "", text: self.field.binding)
+                TextField(L(self.field.placeholder ?? ""), text: self.field.binding)
                     .textFieldStyle(.roundedBorder)
                     .font(.footnote)
                     .onTapGesture { self.field.onActivate?() }
             case .secure:
-                SecureField(self.field.placeholder ?? "", text: self.field.binding)
+                SecureField(L(self.field.placeholder ?? ""), text: self.field.binding)
                     .textFieldStyle(.roundedBorder)
                     .font(.footnote)
                     .onTapGesture { self.field.onActivate?() }
@@ -186,7 +186,7 @@ struct ProviderSettingsFieldRowView: View {
             if !actions.isEmpty {
                 HStack(spacing: 10) {
                     ForEach(actions) { action in
-                        Button(action.title) {
+                        Button(L(action.title)) {
                             Task { @MainActor in
                                 await action.perform()
                             }
@@ -198,7 +198,7 @@ struct ProviderSettingsFieldRowView: View {
             }
 
             if let footer = self.field.footerText, !footer.isEmpty {
-                Text(footer)
+                LText(footer)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -216,13 +216,13 @@ struct ProviderSettingsTokenAccountsRowView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center, spacing: 12) {
-                Text(self.descriptor.title)
+                LText(self.descriptor.title)
                     .font(.subheadline.weight(.semibold))
                 Spacer(minLength: 8)
                 if let title = self.descriptor.primaryAddActionTitle,
                    let action = self.descriptor.primaryAddAction
                 {
-                    Button(title) {
+                    Button(L(title)) {
                         Task { @MainActor in
                             await action()
                         }
@@ -233,7 +233,7 @@ struct ProviderSettingsTokenAccountsRowView: View {
             }
 
             if !self.descriptor.subtitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                Text(self.descriptor.subtitle)
+                LText(self.descriptor.subtitle)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -241,7 +241,7 @@ struct ProviderSettingsTokenAccountsRowView: View {
 
             let accounts = self.descriptor.accounts()
             if accounts.isEmpty {
-                Text("No token accounts yet.")
+                LText("No token accounts yet.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } else {
@@ -269,7 +269,7 @@ struct ProviderSettingsTokenAccountsRowView: View {
                             }
                             .buttonStyle(.plain)
 
-                            Button("Remove") {
+                            Button(L("Remove")) {
                                 self.descriptor.removeAccount(account.id)
                             }
                             .buttonStyle(.bordered)
@@ -284,13 +284,13 @@ struct ProviderSettingsTokenAccountsRowView: View {
 
             if self.descriptor.primaryAddAction == nil {
                 HStack(spacing: 8) {
-                    TextField("Label", text: self.$newLabel)
+                    TextField(L("Label"), text: self.$newLabel)
                         .textFieldStyle(.roundedBorder)
                         .font(.footnote)
-                    SecureField(self.descriptor.placeholder, text: self.$newToken)
+                    SecureField(L(self.descriptor.placeholder), text: self.$newToken)
                         .textFieldStyle(.roundedBorder)
                         .font(.footnote)
-                    Button("Add") {
+                    Button(L("Add")) {
                         let label = self.newLabel.trimmingCharacters(in: .whitespacesAndNewlines)
                         let token = self.newToken.trimmingCharacters(in: .whitespacesAndNewlines)
                         guard !label.isEmpty, !token.isEmpty else { return }
@@ -306,12 +306,12 @@ struct ProviderSettingsTokenAccountsRowView: View {
             }
 
             HStack(spacing: 10) {
-                Button("Open token file") {
+                Button(L("Open token file")) {
                     self.descriptor.openConfigFile()
                 }
                 .buttonStyle(.link)
                 .controlSize(.small)
-                Button("Reload") {
+                Button(L("Reload")) {
                     self.descriptor.reloadFromDisk()
                 }
                 .buttonStyle(.link)

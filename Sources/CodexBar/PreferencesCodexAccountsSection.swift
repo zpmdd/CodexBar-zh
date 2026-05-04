@@ -51,7 +51,7 @@ struct CodexAccountsSectionState: Equatable {
     }
 
     var systemDisplayName: String {
-        self.systemVisibleAccount?.displayName ?? "No system account"
+        self.systemVisibleAccount?.displayName ?? L("No system account")
     }
 
     var canAddAccount: Bool {
@@ -64,9 +64,9 @@ struct CodexAccountsSectionState: Equatable {
 
     var addAccountTitle: String {
         if self.isAuthenticatingManagedAccount, self.authenticatingManagedAccountID == nil {
-            return "Adding Account…"
+            return L("Adding Account…")
         }
-        return "Add Account"
+        return L("Add Account")
     }
 
     func showsLiveBadge(for account: CodexVisibleAccount) -> Bool {
@@ -136,7 +136,7 @@ struct CodexAccountsSectionView: View {
             if let selection = self.activeSelectionBinding {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(alignment: .firstTextBaseline, spacing: 10) {
-                        Text("Active")
+                        LText("Active")
                             .font(.subheadline.weight(.semibold))
                             .frame(width: ProviderSettingsMetrics.pickerLabelWidth, alignment: .leading)
 
@@ -152,8 +152,8 @@ struct CodexAccountsSectionView: View {
                         Spacer(minLength: 0)
                     }
 
-                    Text("Choose which Codex account CodexBar should follow.")
-                        .font(.footnote)
+                        LText("Choose which Codex account CodexBar should follow.")
+                            .font(.footnote)
                         .foregroundStyle(.secondary)
 
                     self.systemRow(selection: self.systemSelectionBinding)
@@ -166,7 +166,7 @@ struct CodexAccountsSectionView: View {
             } else if let account = self.state.singleVisibleAccount {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(alignment: .firstTextBaseline, spacing: 10) {
-                        Text("Account")
+                        LText("Account")
                             .font(.subheadline.weight(.semibold))
                             .frame(width: ProviderSettingsMetrics.pickerLabelWidth, alignment: .leading)
 
@@ -181,7 +181,7 @@ struct CodexAccountsSectionView: View {
             }
 
             if self.state.visibleAccounts.isEmpty {
-                Text("No Codex accounts detected yet.")
+                LText("No Codex accounts detected yet.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } else {
@@ -200,13 +200,13 @@ struct CodexAccountsSectionView: View {
             }
 
             if let notice = self.state.notice {
-                Text(notice.text)
+                LText(notice.text)
                     .font(.footnote)
                     .foregroundStyle(notice.tone == .warning ? .red : .secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            Button(self.state.addAccountTitle) {
+            Button(L(self.state.addAccountTitle)) {
                 self.addAccount()
             }
             .buttonStyle(.bordered)
@@ -235,7 +235,7 @@ struct CodexAccountsSectionView: View {
     @ViewBuilder
     private func systemRow(selection: Binding<String>?) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
-            Text("System")
+            LText("System")
                 .font(.subheadline.weight(.semibold))
                 .frame(width: ProviderSettingsMetrics.pickerLabelWidth, alignment: .leading)
 
@@ -259,13 +259,13 @@ struct CodexAccountsSectionView: View {
                         .disabled(self.state.canPromoteToSystem(account) == false)
                     }
                 } label: {
-                    Text(self.state.systemDisplayName)
+                    LText(self.state.systemDisplayName)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
                 .disabled(self.state.isSystemSelectionDisabled)
             } else {
-                Text(self.state.systemDisplayName)
+                LText(self.state.systemDisplayName)
                     .font(.subheadline)
                     .foregroundStyle(self.state.systemVisibleAccount == nil ? .secondary : .primary)
             }
@@ -273,7 +273,7 @@ struct CodexAccountsSectionView: View {
             Spacer(minLength: 0)
         }
 
-        Text("The default Codex account on this Mac.")
+        LText("The default Codex account on this Mac.")
             .font(.footnote)
             .foregroundStyle(.secondary)
     }
@@ -294,7 +294,7 @@ private struct CodexAccountsSectionRowView: View {
                 Text(self.account.displayName)
                     .font(.subheadline.weight(.semibold))
                 if self.showsSystemBadge {
-                    Text("(System)")
+                    LText("(System)")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }
@@ -303,7 +303,7 @@ private struct CodexAccountsSectionRowView: View {
             Spacer(minLength: 8)
 
             if self.account.canReauthenticate {
-                Button(self.reauthenticateTitle) {
+                Button(L(self.reauthenticateTitle)) {
                     self.onReauthenticate()
                 }
                 .buttonStyle(.bordered)
@@ -312,7 +312,7 @@ private struct CodexAccountsSectionRowView: View {
             }
 
             if self.account.canRemove {
-                Button("Remove") {
+                Button(L("Remove")) {
                     self.onRemove()
                 }
                 .buttonStyle(.bordered)

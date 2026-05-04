@@ -42,11 +42,11 @@ struct MenuContent: View {
         case let .text(text, style):
             switch style {
             case .headline:
-                Text(text).font(.headline)
+                LText(text).font(.headline)
             case .primary:
-                Text(text)
+                LText(text)
             case .secondary:
-                Text(text).foregroundStyle(.secondary).font(.footnote)
+                LText(text).foregroundStyle(.secondary).font(.footnote)
             }
         case let .action(title, action):
             Button {
@@ -57,11 +57,11 @@ struct MenuContent: View {
                         Image(systemName: icon)
                             .imageScale(.medium)
                             .frame(width: 18, alignment: .center)
-                        Text(title)
+                        LText(title)
                     }
                     .foregroundStyle(.primary)
                 } else {
-                    Text(title)
+                    LText(title)
                 }
             }
             .buttonStyle(.plain)
@@ -71,7 +71,7 @@ struct MenuContent: View {
                     if let systemImageName {
                         Image(systemName: systemImageName)
                     }
-                    Text(title).font(.headline)
+                    LText(title).font(.headline)
                 }
                 ForEach(Array(submenuItems.enumerated()), id: \.offset) { _, submenuItem in
                     HStack(spacing: 8) {
@@ -82,7 +82,7 @@ struct MenuContent: View {
                         } else {
                             Spacer().frame(width: 18)
                         }
-                        Text(submenuItem.title)
+                        LText(submenuItem.title)
                             .foregroundStyle(submenuItem.isEnabled ? .primary : .secondary)
                     }
                 }

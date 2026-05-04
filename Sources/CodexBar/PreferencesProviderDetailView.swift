@@ -200,7 +200,7 @@ private struct ProviderDetailHeaderView: View {
                     Text(self.store.metadata(for: self.provider).displayName)
                         .font(.title3.weight(.semibold))
 
-                    Text(self.detailSubtitle)
+                    LText(self.detailSubtitle)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -214,7 +214,7 @@ private struct ProviderDetailHeaderView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
-                .help("Refresh")
+                .help(L("Refresh"))
 
                 Toggle("", isOn: self.$isEnabled)
                     .labelsHidden()
@@ -328,9 +328,9 @@ private struct ProviderDetailInfoRow: View {
 
     var body: some View {
         GridRow {
-            Text(self.label)
+            LText(self.label)
                 .frame(width: self.labelWidth, alignment: .leading)
-            Text(self.value)
+            LText(self.value)
                 .lineLimit(2)
         }
     }
@@ -356,7 +356,7 @@ struct ProviderMetricsInlineView: View {
             horizontalPadding: 0)
         {
             if !hasMetrics, !hasUsageNotes, !hasProviderCost, !hasCredits, !hasTokenUsage {
-                Text(self.placeholderText)
+                LText(self.placeholderText)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } else {
@@ -419,7 +419,7 @@ private struct ProviderMetricInlineRow: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
-            Text(self.title)
+            LText(self.title)
                 .font(.subheadline.weight(.semibold))
                 .lineLimit(1)
                 .frame(width: self.labelWidth, alignment: .leading)
@@ -434,13 +434,13 @@ private struct ProviderMetricInlineRow: View {
                     .frame(minWidth: ProviderSettingsMetrics.metricBarWidth, maxWidth: .infinity)
 
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(self.metric.percentLabel)
+                    LText(self.metric.percentLabel)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .monospacedDigit()
                     Spacer(minLength: 8)
                     if let resetText = self.metric.resetText, !resetText.isEmpty {
-                        Text(resetText)
+                        LText(resetText)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
@@ -451,13 +451,13 @@ private struct ProviderMetricInlineRow: View {
                 if hasLeftDetail || hasRightDetail {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
                         if let leftDetail = self.metric.detailLeftText, !leftDetail.isEmpty {
-                            Text(leftDetail)
+                            LText(leftDetail)
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                         }
                         Spacer(minLength: 8)
                         if let rightDetail = self.metric.detailRightText, !rightDetail.isEmpty {
-                            Text(rightDetail)
+                            LText(rightDetail)
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                         }
@@ -465,7 +465,7 @@ private struct ProviderMetricInlineRow: View {
                 }
 
                 if let detail = self.detailText, !detail.isEmpty {
-                    Text(detail)
+                    LText(detail)
                         .font(.footnote)
                         .foregroundStyle(.tertiary)
                 }
@@ -494,7 +494,7 @@ private struct ProviderUsageNotesInlineView: View {
             }
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(Array(self.notes.enumerated()), id: \.offset) { _, note in
-                    Text(note)
+                    LText(note)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .lineLimit(2)
@@ -514,11 +514,11 @@ private struct ProviderMetricInlineTextRow: View {
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
-            Text(self.title)
+            LText(self.title)
                 .font(.subheadline.weight(.semibold))
                 .frame(width: self.labelWidth, alignment: .leading)
 
-            Text(self.value)
+            LText(self.value)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
 
@@ -535,7 +535,7 @@ private struct ProviderMetricInlineCostRow: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
-            Text(self.section.title)
+            LText(self.section.title)
                 .font(.subheadline.weight(.semibold))
                 .frame(width: self.labelWidth, alignment: .leading)
 
@@ -543,16 +543,16 @@ private struct ProviderMetricInlineCostRow: View {
                 UsageProgressBar(
                     percent: self.section.percentUsed,
                     tint: self.progressColor,
-                    accessibilityLabel: "Usage used")
+                    accessibilityLabel: L("Usage used"))
                     .frame(minWidth: ProviderSettingsMetrics.metricBarWidth, maxWidth: .infinity)
 
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(String(format: "%.0f%% used", self.section.percentUsed))
+                    LText(String(format: "%.0f%% used", self.section.percentUsed))
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .monospacedDigit()
                     Spacer(minLength: 8)
-                    Text(self.section.spendLine)
+                    LText(self.section.spendLine)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }

@@ -72,7 +72,7 @@ private struct ProviderSidebarRowView: View {
                 .contentShape(Rectangle())
                 .padding(.vertical, 4)
                 .padding(.horizontal, 2)
-                .help("Drag to reorder")
+                .help(L("Drag to reorder"))
                 .onDrag {
                     self.draggingProvider = self.provider
                     return NSItemProvider(object: self.provider.rawValue as NSString)
@@ -95,7 +95,7 @@ private struct ProviderSidebarRowView: View {
                             .controlSize(.mini)
                     }
                 }
-                Text(statusText)
+                LText(statusText)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
@@ -145,7 +145,7 @@ private struct ProviderSidebarReorderHandle: View {
             width: ProviderSettingsMetrics.reorderHandleSize,
             height: ProviderSettingsMetrics.reorderHandleSize)
         .foregroundStyle(.tertiary)
-        .accessibilityLabel("Reorder")
+        .accessibilityLabel(L("Reorder"))
     }
 }
 

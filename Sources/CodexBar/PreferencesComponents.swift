@@ -10,13 +10,13 @@ struct PreferenceToggleRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 5.4) {
             Toggle(isOn: self.$binding) {
-                Text(self.title)
+                LText(self.title)
                     .font(.body)
             }
             .toggleStyle(.checkbox)
 
             if let subtitle, !subtitle.isEmpty {
-                Text(subtitle)
+                LText(subtitle)
                     .font(.footnote)
                     .foregroundStyle(.tertiary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -47,11 +47,11 @@ struct SettingsSection<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             if let title, !title.isEmpty {
-                Text(title)
+                LText(title)
                     .font(.subheadline.weight(.semibold))
             }
             if let caption {
-                Text(caption)
+                LText(caption)
                     .font(.footnote)
                     .foregroundStyle(.tertiary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -77,7 +77,7 @@ struct AboutLinkRow: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: self.icon)
-                Text(self.title)
+                LText(self.title)
                     .underline(self.hovering, color: .accentColor)
             }
             .frame(maxWidth: .infinity)

@@ -14,10 +14,10 @@ extension StatusItemController {
     func applySubtitle(_ subtitle: String, to item: NSMenuItem, title: String) {
         if #available(macOS 14.4, *) {
             // NSMenuItem.subtitle is only available on macOS 14.4+.
-            item.subtitle = subtitle
+            item.subtitle = L(subtitle)
         } else {
-            item.view = self.makeMenuSubtitleView(title: title, subtitle: subtitle, isEnabled: item.isEnabled)
-            item.toolTip = "\(title) — \(subtitle)"
+            item.view = self.makeMenuSubtitleView(title: L(title), subtitle: L(subtitle), isEnabled: item.isEnabled)
+            item.toolTip = "\(L(title)) — \(L(subtitle))"
         }
     }
 

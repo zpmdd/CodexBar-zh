@@ -379,8 +379,8 @@ extension StatusItemController {
 
     func presentLoginAlert(title: String, message: String) {
         let alert = NSAlert()
-        alert.messageText = title
-        alert.informativeText = message
+        alert.messageText = L(title)
+        alert.informativeText = L(message)
         alert.alertStyle = .warning
         alert.runModal()
     }
@@ -396,8 +396,8 @@ extension StatusItemController {
 
     func postLoginNotification(for provider: UsageProvider) {
         let name = ProviderDescriptorRegistry.descriptor(for: provider).metadata.displayName
-        let title = "\(name) login successful"
-        let body = "You can return to the app; authentication finished."
+        let title = L("\(name) login successful")
+        let body = L("You can return to the app; authentication finished.")
         AppNotifications.shared.post(idPrefix: "login-\(provider.rawValue)", title: title, body: body)
     }
 

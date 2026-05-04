@@ -15,7 +15,7 @@ struct ProviderErrorView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(self.title)
+                LText(self.title)
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -26,23 +26,23 @@ struct ProviderErrorView: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
-                .help("Copy error")
+                .help(L("Copy error"))
             }
 
-            Text(self.display.preview)
+            LText(self.display.preview)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
 
             if self.display.preview != self.display.full {
-                Button(self.isExpanded ? "Hide details" : "Show details") { self.isExpanded.toggle() }
+                Button(L(self.isExpanded ? "Hide details" : "Show details")) { self.isExpanded.toggle() }
                     .buttonStyle(.link)
                     .font(.footnote)
             }
 
             if self.isExpanded {
-                Text(self.display.full)
+                LText(self.display.full)
                     .font(.footnote)
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)

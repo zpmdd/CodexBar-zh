@@ -51,14 +51,14 @@ struct AboutPane: View {
             VStack(spacing: 2) {
                 Text("CodexBar")
                     .font(.title3).bold()
-                Text("Version \(self.versionString)")
+                LText("Version \(self.versionString)")
                     .foregroundStyle(.secondary)
                 if let buildTimestamp {
-                    Text("Built \(buildTimestamp)")
+                    LText("Built \(buildTimestamp)")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
-                Text("May your tokens never run out—keep agent limits in view.")
+                LText("May your tokens never run out—keep agent limits in view.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -80,32 +80,32 @@ struct AboutPane: View {
 
             if self.updater.isAvailable {
                 VStack(spacing: 10) {
-                    Toggle("Check for updates automatically", isOn: self.$autoUpdateEnabled)
+                    Toggle(L("Check for updates automatically"), isOn: self.$autoUpdateEnabled)
                         .toggleStyle(.checkbox)
                         .frame(maxWidth: .infinity, alignment: .center)
                     VStack(spacing: 6) {
                         HStack(spacing: 12) {
-                            Text("Update Channel")
+                            LText("Update Channel")
                             Spacer()
                             Picker("", selection: self.updateChannelBinding) {
                                 ForEach(UpdateChannel.allCases) { channel in
-                                    Text(channel.displayName).tag(channel)
+                                    LText(channel.displayName).tag(channel)
                                 }
                             }
                             .pickerStyle(.menu)
                             .labelsHidden()
                         }
                         .frame(maxWidth: 280)
-                        Text(self.updateChannel.description)
+                        LText(self.updateChannel.description)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: 280)
                     }
-                    Button("Check for Updates…") { self.updater.checkForUpdates(nil) }
+                    Button(L("Check for Updates…")) { self.updater.checkForUpdates(nil) }
                 }
             } else {
-                Text(self.updater.unavailableReason ?? "Updates unavailable in this build.")
+                LText(self.updater.unavailableReason ?? "Updates unavailable in this build.")
                     .foregroundStyle(.secondary)
             }
 

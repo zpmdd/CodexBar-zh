@@ -11,17 +11,17 @@ struct AdvancedPane: View {
         ScrollView(.vertical, showsIndicators: true) {
             VStack(alignment: .leading, spacing: 16) {
                 SettingsSection(contentSpacing: 8) {
-                    Text("Keyboard shortcut")
+                    LText("Keyboard shortcut")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)
                     HStack(alignment: .center, spacing: 12) {
-                        Text("Open menu")
+                        LText("Open menu")
                             .font(.body)
                         Spacer()
                         KeyboardShortcuts.Recorder(for: .openMenu)
                     }
-                    Text("Trigger the menu bar menu from anywhere.")
+                    LText("Trigger the menu bar menu from anywhere.")
                         .font(.footnote)
                         .foregroundStyle(.tertiary)
                 }
@@ -36,19 +36,19 @@ struct AdvancedPane: View {
                             if self.isInstallingCLI {
                                 ProgressView().controlSize(.small)
                             } else {
-                                Text("Install CLI")
+                                LText("Install CLI")
                             }
                         }
                         .disabled(self.isInstallingCLI)
 
                         if let status = self.cliStatus {
-                            Text(status)
+                            LText(status)
                                 .font(.footnote)
                                 .foregroundStyle(.tertiary)
                                 .lineLimit(2)
                         }
                     }
-                    Text("Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar.")
+                    LText("Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar.")
                         .font(.footnote)
                         .foregroundStyle(.tertiary)
                 }

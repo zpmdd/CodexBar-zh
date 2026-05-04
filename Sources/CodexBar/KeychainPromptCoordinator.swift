@@ -132,9 +132,9 @@ enum KeychainPromptCoordinator {
     @MainActor
     private static func showAlert(title: String, message: String) {
         let alert = NSAlert()
-        alert.messageText = title
-        alert.informativeText = message
-        alert.addButton(withTitle: "OK")
+        alert.messageText = L(title)
+        alert.informativeText = L(message)
+        alert.addButton(withTitle: L("OK"))
         _ = alert.runModal()
     }
 }

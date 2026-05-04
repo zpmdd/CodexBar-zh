@@ -13,7 +13,7 @@ struct DisplayPane: View {
         ScrollView(.vertical, showsIndicators: true) {
             VStack(alignment: .leading, spacing: 16) {
                 SettingsSection(contentSpacing: 12) {
-                    Text("Menu bar")
+                    LText("Menu bar")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)
@@ -39,16 +39,16 @@ struct DisplayPane: View {
                         binding: self.$settings.menuBarShowsBrandIconWithPercent)
                     HStack(alignment: .top, spacing: 12) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Display mode")
+                            LText("Display mode")
                                 .font(.body)
-                            Text("Choose what to show in the menu bar (Pace shows usage vs. expected).")
+                            LText("Choose what to show in the menu bar (Pace shows usage vs. expected).")
                                 .font(.footnote)
                                 .foregroundStyle(.tertiary)
                         }
                         Spacer()
-                        Picker("Display mode", selection: self.$settings.menuBarDisplayMode) {
+                        Picker(L("Display mode"), selection: self.$settings.menuBarDisplayMode) {
                             ForEach(MenuBarDisplayMode.allCases) { mode in
-                                Text(mode.label).tag(mode)
+                                LText(mode.label).tag(mode)
                             }
                         }
                         .labelsHidden()
@@ -62,7 +62,7 @@ struct DisplayPane: View {
                 Divider()
 
                 SettingsSection(contentSpacing: 12) {
-                    Text("Menu content")
+                    LText("Menu content")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)
@@ -110,11 +110,11 @@ struct DisplayPane: View {
     private var overviewProviderSelector: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .center, spacing: 12) {
-                Text("Overview tab providers")
+                LText("Overview tab providers")
                     .font(.body)
                 Spacer(minLength: 0)
                 if self.showsOverviewConfigureButton {
-                    Button("Configure…") {
+                    Button(L("Configure…")) {
                         self.isOverviewProviderPopoverPresented = true
                     }
                     .offset(y: 1)
@@ -125,15 +125,15 @@ struct DisplayPane: View {
             }
 
             if !self.settings.mergeIcons {
-                Text("Enable Merge Icons to configure Overview tab providers.")
+                LText("Enable Merge Icons to configure Overview tab providers.")
                     .font(.footnote)
                     .foregroundStyle(.tertiary)
             } else if self.activeProvidersInOrder.isEmpty {
-                Text("No enabled providers available for Overview.")
+                LText("No enabled providers available for Overview.")
                     .font(.footnote)
                     .foregroundStyle(.tertiary)
             } else {
-                Text(self.overviewProviderSelectionSummary)
+                LText(self.overviewProviderSelectionSummary)
                     .font(.footnote)
                     .foregroundStyle(.tertiary)
                     .lineLimit(2)
@@ -144,9 +144,9 @@ struct DisplayPane: View {
 
     private var overviewProviderPopover: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Choose up to \(Self.maxOverviewProviders) providers")
+            LText("Choose up to \(Self.maxOverviewProviders) providers")
                 .font(.headline)
-            Text("Overview rows always follow provider order.")
+            LText("Overview rows always follow provider order.")
                 .font(.footnote)
                 .foregroundStyle(.tertiary)
 
@@ -159,7 +159,7 @@ struct DisplayPane: View {
                                 set: { shouldSelect in
                                     self.setOverviewProviderSelection(provider: provider, isSelected: shouldSelect)
                                 })) {
-                            Text(self.providerDisplayName(provider))
+                            LText(self.providerDisplayName(provider))
                                 .font(.body)
                         }
                         .toggleStyle(.checkbox)
