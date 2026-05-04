@@ -11,6 +11,25 @@ struct CodexBarLocalizationTests {
     }
 
     @Test
+    func `translates display pane help text`() {
+        #expect(
+            CodexBarL10n.tr("Show provider icons in the switcher (otherwise show a weekly progress line).") ==
+                "在切换器中显示服务图标，否则显示每周进度线。")
+        #expect(
+            CodexBarL10n.tr("Menu bar auto-shows the provider closest to its rate limit.") ==
+                "菜单栏会自动显示最接近限额的服务。")
+        #expect(
+            CodexBarL10n.tr("Replace critter bars with provider branding icons and a percentage.") ==
+                "用服务品牌图标和百分比替代用量条。")
+        #expect(
+            CodexBarL10n.tr("Progress bars fill as you consume quota (instead of showing remaining).") ==
+                "进度条随配额消耗逐步填充，而不是显示剩余量。")
+        #expect(
+            CodexBarL10n.tr("Stack token accounts in the menu (otherwise show an account switcher bar).") ==
+                "在菜单中堆叠显示 token 账户，否则显示账户切换栏。")
+    }
+
+    @Test
     func `translates dynamic usage and account lines`() {
         #expect(CodexBarL10n.tr("Account: user@example.com") == "账户：user@example.com")
         #expect(CodexBarL10n.tr("Plan: Plus") == "套餐：Plus")
