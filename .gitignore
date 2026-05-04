@@ -16,6 +16,7 @@ CodexBar *.app/
 CodexBar_*.app/
 Codexbar.app/
 # Release artifacts
+dist/
 *.ipa
 *.dSYM*
 *.zip

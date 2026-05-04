@@ -82,13 +82,13 @@ struct CreditsHistoryChartMenuView: View {
 
                 let detail = self.detailLines(model: model)
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(detail.primary)
+                    LText(detail.primary)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .frame(height: 16, alignment: .leading)
-                    Text(detail.secondary ?? " ")
+                    LText(detail.secondary ?? " ")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)

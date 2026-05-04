@@ -249,9 +249,18 @@ if [[ "$LOWER_CONF" == "debug" ]]; then
   FEED_URL=""
   AUTO_CHECKS=false
 fi
+if [[ -n "${CODEXBAR_BUNDLE_ID:-}" ]]; then
+  BUNDLE_ID="$CODEXBAR_BUNDLE_ID"
+fi
 if [[ "$SIGNING_MODE" == "adhoc" ]]; then
   FEED_URL=""
   AUTO_CHECKS=false
+fi
+if [[ -n "${CODEXBAR_FEED_URL+x}" ]]; then
+  FEED_URL="$CODEXBAR_FEED_URL"
+fi
+if [[ -n "${CODEXBAR_AUTO_CHECKS:-}" ]]; then
+  AUTO_CHECKS="$CODEXBAR_AUTO_CHECKS"
 fi
 WIDGET_BUNDLE_ID="${BUNDLE_ID}.widget"
 APP_TEAM_ID="${APP_TEAM_ID:-Y5PE65HELJ}"
@@ -492,6 +501,17 @@ fi
 
 # Ensure contents are writable before stripping attributes and signing.
 chmod -R u+w "$APP"
+
+if [[ "$SIGNING_MODE" == "adhoc" ]]; then
+  CODESIGN_ID="-"
+  CODESIGN_ARGS=(--force --sign "$CODESIGN_ID")
+elif [[ "$ALLOW_LLDB" == "1" ]]; then
+  CODESIGN_ID="-"
+  CODESIGN_ARGS=(--force --sign "$CODESIGN_ID")
+else
+  CODESIGN_ID="${APP_IDENTITY:-Developer ID Application: Peter Steinberger (Y5PE65HELJ)}"
+  CODESIGN_ARGS=(--force --timestamp --options runtime --sign "$CODESIGN_ID")
+fi
 
 # Strip extended attributes to prevent AppleDouble (._*) files that break code sealing
 xattr -cr "$APP"

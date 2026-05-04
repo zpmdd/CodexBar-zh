@@ -1,3 +1,4 @@
+import AppKit
 import KeyboardShortcuts
 import SwiftUI
 
@@ -19,7 +20,7 @@ struct AdvancedPane: View {
                         LText("Open menu")
                             .font(.body)
                         Spacer()
-                        KeyboardShortcuts.Recorder(for: .openMenu)
+                        LocalizedShortcutRecorder(for: .openMenu)
                     }
                     LText("Trigger the menu bar menu from anywhere.")
                         .font(.footnote)
@@ -96,6 +97,86 @@ struct AdvancedPane: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
+        }
+    }
+}
+
+private struct LocalizedShortcutRecorder: NSViewRepresentable {
+    let name: KeyboardShortcuts.Name
+
+    init(for name: KeyboardShortcuts.Name) {
+        self.name = name
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    func makeNSView(context: Context) -> KeyboardShortcuts.RecorderCocoa {
+        let recorder = KeyboardShortcuts.RecorderCocoa(for: self.name)
+        context.coordinator.recorder = recorder
+        context.coordinator.start()
+        Self.applyChinesePlaceholder(to: recorder)
+        return recorder
+    }
+
+    func updateNSView(_ recorder: KeyboardShortcuts.RecorderCocoa, context: Context) {
+        recorder.shortcutName = self.name
+        context.coordinator.recorder = recorder
+        Self.applyChinesePlaceholder(to: recorder)
+    }
+
+    static func dismantleNSView(_ recorder: KeyboardShortcuts.RecorderCocoa, coordinator: Coordinator) {
+        coordinator.stop()
+    }
+
+    private static func applyChinesePlaceholder(to recorder: KeyboardShortcuts.RecorderCocoa) {
+        guard recorder.stringValue.isEmpty else { return }
+
+        switch recorder.placeholderString {
+        case "record_shortcut", "Record Shortcut", nil:
+            recorder.placeholderString = L("Record Shortcut")
+        case "press_shortcut", "Press Shortcut":
+            recorder.placeholderString = L("Press Shortcut")
+        default:
+            break
+        }
+    }
+
+    final class Coordinator: NSObject {
+        weak var recorder: KeyboardShortcuts.RecorderCocoa?
+        private var isObserving = false
+
+        func start() {
+            guard !self.isObserving else { return }
+            let names = [
+                Notification.Name("KeyboardShortcuts_recorderActiveStatusDidChange"),
+                NSControl.textDidBeginEditingNotification,
+                NSControl.textDidEndEditingNotification,
+            ]
+            for name in names {
+                NotificationCenter.default.addObserver(
+                    self,
+                    selector: #selector(self.updatePlaceholder),
+                    name: name,
+                    object: nil)
+            }
+            self.isObserving = true
+        }
+
+        func stop() {
+            NotificationCenter.default.removeObserver(self)
+            self.isObserving = false
+        }
+
+        @MainActor
+        @objc private func updatePlaceholder() {
+            guard let recorder = self.recorder else { return }
+            LocalizedShortcutRecorder.applyChinesePlaceholder(to: recorder)
+        }
+
+        deinit {
+            self.stop()
         }
     }
 }

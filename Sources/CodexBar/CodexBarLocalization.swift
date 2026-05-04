@@ -78,6 +78,17 @@ enum CodexBarL10n {
             let tail = String(text.dropFirst("Disabled — ".count))
             return "已禁用 - \(self.tr(tail))"
         }
+        if text.contains(" · ") {
+            return text
+                .components(separatedBy: " · ")
+                .map { self.tr($0) }
+                .joined(separator: " · ")
+        }
+        if let updatedRange = text.range(of: " — Updated ") {
+            let status = String(text[..<updatedRange.lowerBound])
+            let tail = String(text[updatedRange.upperBound...])
+            return "\(self.tr(status)) - 更新于 \(self.translateTimePhrase(tail))"
+        }
         if text.hasPrefix("Updated ") {
             let tail = String(text.dropFirst("Updated ".count))
             return "更新于 \(self.translateTimePhrase(tail))"
@@ -93,6 +104,10 @@ enum CodexBarL10n {
         if text.hasPrefix("Today: ") {
             return text.replacingOccurrences(of: "Today: ", with: "今日：")
                 .replacingOccurrences(of: " tokens", with: " tokens")
+        }
+        if text.hasPrefix("Pace: ") {
+            let tail = String(text.dropFirst("Pace: ".count))
+            return "节奏：\(self.tr(tail))"
         }
         if text.hasPrefix("Last 30 days: ") {
             return text.replacingOccurrences(of: "Last 30 days: ", with: "近 30 天：")
@@ -176,6 +191,25 @@ enum CodexBarL10n {
             let stem = String(text.dropLast(" used".count))
             return "已用 \(stem)"
         }
+        if text.hasSuffix("% in reserve") {
+            let stem = String(text.dropLast("% in reserve".count))
+            return "预留 \(stem)%"
+        }
+        if text.hasSuffix("% in deficit") {
+            let stem = String(text.dropLast("% in deficit".count))
+            return "超前消耗 \(stem)%"
+        }
+        if text.hasPrefix("Runs out in ") {
+            let tail = String(text.dropFirst("Runs out in ".count))
+            return "将在 \(self.translateTimePhrase(tail))后耗尽"
+        }
+        if text == "Runs out now" {
+            return "现在耗尽"
+        }
+        if text.hasPrefix("≈ ") && text.hasSuffix("% run-out risk") {
+            let stem = String(text.dropFirst("≈ ".count).dropLast("% run-out risk".count))
+            return "约 \(stem)% 耗尽风险"
+        }
         if text.hasSuffix(" remaining") {
             let stem = String(text.dropLast(" remaining".count))
             return "剩余 \(stem)"
@@ -230,6 +264,7 @@ enum CodexBarL10n {
         "Add accounts via GitHub OAuth Device Flow.": "通过 GitHub OAuth 设备流程添加账户。",
         "Add Workspace": "添加工作区",
         "Advanced": "高级",
+        "All Systems Operational": "所有系统正常",
         "Animation pattern": "动画样式",
         "API key limit": "API Key 限额",
         "API key limit unavailable right now": "当前无法获取 API Key 限额",
@@ -295,6 +330,7 @@ enum CodexBarL10n {
         "Could not open Terminal for Gemini": "无法为 Gemini 打开终端",
         "Could not start claude /login": "无法启动 claude /login",
         "Cost": "费用",
+        "Critical issue": "严重问题",
         "Credits": "积分",
         "Credits remaining": "剩余积分",
         "Current": "当前",
@@ -306,7 +342,10 @@ enum CodexBarL10n {
         "Disable OpenAI dashboard cookie usage.": "禁用 OpenAI 看板 cookie 用法。",
         "Disable Keychain access": "禁用钥匙串访问",
         "Disable all Keychain reads and writes. Browser cookie import is unavailable; paste Cookie headers manually in Providers.": "禁用所有钥匙串读写。浏览器 cookie 导入将不可用；请在“服务”中手动粘贴 Cookie headers。",
+        "Degraded performance": "性能下降",
+        "Desktop App": "桌面应用",
         "Drag to reorder": "拖动排序",
+        "Email": "邮件",
         "Effective PATH": "生效的 PATH",
         "Enable Merge Icons to configure Overview tab providers.": "启用“合并图标”后可配置概览页服务。",
         "Enable file logging": "启用文件日志",
@@ -327,12 +366,14 @@ enum CodexBarL10n {
         "Historical tracking": "历史跟踪",
         "Hide details": "隐藏详情",
         "Hide personal information": "隐藏个人信息",
+        "Hover a bar for details": "悬停柱形查看详情",
         "How often CodexBar polls providers in the background.": "CodexBar 后台轮询各服务的频率。",
         "Install CLI": "安装 CLI",
         "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again.": "请安装 Claude CLI（npm i -g @anthropic-ai/claude-code）后重试。",
         "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again.": "请安装 Gemini CLI（npm i -g @google/gemini-cli）后重试。",
         "Inactive while \"Disable Keychain access\" is enabled in Advanced.": "在“高级”中启用“禁用钥匙串访问”时不可用。",
         "JetBrains IDE": "JetBrains IDE",
+        "Jetbrains": "JetBrains",
         "Managed Codex accounts unavailable": "托管 Codex 账户不可用",
         "Managed Codex login did not complete. Try again after finishing the browser login flow.": "托管 Codex 登录没有完成。请完成浏览器登录流程后重试。",
         "Keep CLI sessions alive": "保持 CLI 会话存活",
@@ -341,12 +382,15 @@ enum CodexBarL10n {
         "Keychain prompt policy": "钥匙串提示策略",
         "Label": "标签",
         "Last 30 days": "近 30 天",
+        "Lasts until reset": "可持续到重置",
         "Launch": "启动",
         "Load parse dump": "加载解析转储",
         "Loading animations": "加载动画",
         "Logging": "日志",
         "Login Failed": "登录失败",
         "Login shell PATH (startup capture)": "登录 shell PATH（启动时捕获）",
+        "Major outage": "重大中断",
+        "Major System Outage": "重大系统中断",
         "Manual": "手动",
         "May your tokens never run out—keep agent limits in view.": "愿你的 token 永不耗尽 - 随时掌握智能体限额。",
         "MCP details": "MCP 详情",
@@ -356,6 +400,7 @@ enum CodexBarL10n {
         "Menu bar shows percent": "菜单栏显示百分比",
         "Menu content": "菜单内容",
         "Merge Icons": "合并图标",
+        "Minor Service Outage": "局部服务中断",
         "Monthly": "月度",
         "Near full": "接近满额",
         "No data available": "暂无数据",
@@ -405,6 +450,7 @@ enum CodexBarL10n {
         "Open token file": "打开 token 文件",
         "Options": "选项",
         "Obscure email addresses in the menu bar and menu UI.": "在菜单栏和菜单界面中隐藏邮箱地址。",
+        "Operational": "运行正常",
         "Override auto-detection with a custom IDE base path": "使用自定义 IDE 基础路径覆盖自动检测。",
         "Overview": "概览",
         "Overview rows always follow provider order.": "概览行始终按照服务排序显示。",
@@ -426,10 +472,14 @@ enum CodexBarL10n {
         "Paste the Cookie header from a request to admin.mistral.ai. Must contain an ory_session_* cookie.": "粘贴来自 admin.mistral.ai 请求的 Cookie header，必须包含 ory_session_* cookie。",
         "Play full-screen confetti when weekly usage resets.": "每周用量重置时播放全屏彩带效果。",
         "Plan": "套餐",
+        "Partial outage": "部分服务中断",
+        "Partial System Degradation": "部分系统降级",
+        "Maintenance": "维护中",
         "Please complete the login in your browser.\nThis window will close automatically when finished.": "请在浏览器里完成登录。\n完成后此窗口会自动关闭。",
         "Polls OpenAI/Claude status pages and Google Workspace for Gemini/Antigravity, surfacing incidents in the icon and menu.": "轮询 OpenAI/Claude 状态页以及 Gemini/Antigravity 的 Google Workspace 状态，并在图标和菜单中提示事故。",
         "Post depleted": "发送耗尽通知",
         "Post restored": "发送恢复通知",
+        "Press Shortcut": "按下快捷键",
         "Prevents any Keychain access while enabled.": "启用后阻止任何钥匙串访问。",
         "Provider": "服务",
         "Providers": "服务",
@@ -445,6 +495,7 @@ enum CodexBarL10n {
         "Receive stable releases plus beta previews.": "接收稳定版本和 Beta 预览版。",
         "Refresh Session": "刷新会话",
         "Re-run provider autodetect": "重新运行服务自动检测",
+        "Record Shortcut": "设置快捷键",
         "Reads local usage logs. Shows today + last 30 days cost in the menu.": "读取本地用量日志，在菜单中显示今日和近 30 天费用。",
         "Replace critter bars with provider branding icons and a percentage.": "用服务品牌图标和百分比替代用量条。",
         "Secure": "安全输入",
@@ -490,6 +541,7 @@ enum CodexBarL10n {
         "State": "状态",
         "Status": "状态",
         "Status Page": "状态页",
+        "Status unknown": "状态未知",
         "Stable": "稳定版",
         "Stack token accounts in the menu (otherwise show an account switcher bar).": "在菜单中堆叠显示 token 账户，否则显示账户切换栏。",
         "Stored in ~/.codexbar/config.json. Generate one at kimi-k2.ai.": "存储在 ~/.codexbar/config.json。可在 kimi-k2.ai 生成。",
@@ -506,6 +558,7 @@ enum CodexBarL10n {
         "Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar.": "将 CodexBarCLI 作为 codexbar 链接到 /usr/local/bin 和 /opt/homebrew/bin。",
         "System": "系统",
         "(System)": "（系统）",
+        "System Account": "系统账户",
         "Temporarily shows the loading animation after the next refresh.": "下次刷新后临时显示加载动画。",
         "The default Codex account on this Mac.": "这台 Mac 上的默认 Codex 账户。",
         "Tokens": "Token",
@@ -514,7 +567,7 @@ enum CodexBarL10n {
         "To use Vertex AI tracking, you need to authenticate with Google Cloud.\n\n1. Open Terminal\n2. Run: gcloud auth application-default login\n3. Follow the browser prompts to sign in\n4. Set your project: gcloud config set project PROJECT_ID\n\nWould you like to open Terminal now?": "要使用 Vertex AI 跟踪，需要先通过 Google Cloud 认证。\n\n1. 打开终端\n2. 运行：gcloud auth application-default login\n3. 按浏览器提示登录\n4. 设置项目：gcloud config set project PROJECT_ID\n\n现在要打开终端吗？",
         "Token Refreshed": "Token 已刷新",
         "Unavailable": "不可用",
-        "Updates unavailable in this build.": "此构建不可用更新功能。",
+        "Updates unavailable in this build.": "此构建不可使用自动更新。",
         "Update Channel": "更新通道",
         "Update ready, restart now?": "更新已就绪，立即重启？",
         "Updated": "已更新",
@@ -544,6 +597,8 @@ enum CodexBarL10n {
         "Weekly token quota regenerates continuously.": "每周 token 配额会持续恢复。",
         "You can return to the app; authentication finished.": "认证已完成，可以返回应用。",
         "last fetch failed": "最近拉取失败",
+        "press_shortcut": "按下快捷键",
+        "record_shortcut": "设置快捷键",
         "usage not fetched yet": "尚未拉取用量",
     ]
 }
