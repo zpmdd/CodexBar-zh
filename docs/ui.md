@@ -38,6 +38,19 @@ When usage is in deficit, the right-hand label shows an estimated "Runs out in �
 
 Pace is calculated for Codex and Claude weekly windows only and is hidden when less than 3% of the window has elapsed.
 
+In the Chinese build, reserve/deficit labels include a short explanation: "预留 X%（比预期少用）" and
+"超前消耗 X%（比预期多用）".
+
+## Token cost display
+
+Cost calculations and chart heights remain based on the original USD values. When a USD/CNY exchange-rate cache is
+available, menu rows and cost-chart details show an RMB estimate before the USD value, for example:
+"¥424.91 · $62.22 · 78M tokens".
+
+The USD/CNY rate is fetched from Frankfurter only when cost display is needed and the cached rate is older than 6
+hours. If the network request fails, the menu keeps using the last cached rate; if there is no cache yet, it falls
+back to the original USD-only display.
+
 ## Preferences notes
 - Advanced: “Disable Keychain access” turns off browser cookie import; paste Cookie headers manually in Providers.
 - Display: “Overview tab providers” controls which providers appear in Merge Icons → Overview (up to 3).

@@ -3,7 +3,11 @@ import Foundation
 
 extension UsageStore {
     func tokenSnapshot(for provider: UsageProvider) -> CostUsageTokenSnapshot? {
-        self.tokenSnapshots[provider]
+        let snapshot = self.tokenSnapshots[provider]
+        if snapshot?.sessionCostUSD != nil || snapshot?.last30DaysCostUSD != nil {
+            self.scheduleExchangeRateRefreshIfNeededForCostDisplay()
+        }
+        return snapshot
     }
 
     func tokenError(for provider: UsageProvider) -> String? {

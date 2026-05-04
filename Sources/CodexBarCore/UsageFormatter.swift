@@ -108,6 +108,32 @@ public enum UsageFormatter {
         value.formatted(.currency(code: "USD").locale(Locale(identifier: "en_US")))
     }
 
+    /// Formats a CNY value using the RMB symbol, fixed cents, and western grouping for compact menu rows.
+    public static func cnyString(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        formatter.usesGroupingSeparator = true
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+
+        let sign = value < 0 ? "-" : ""
+        let formatted = formatter.string(from: NSNumber(value: abs(value))) ?? String(format: "%.2f", abs(value))
+        return "\(sign)¥\(formatted)"
+    }
+
+    public static func usdCNYCostString(_ value: Double, exchangeRate: ExchangeRateSnapshot?) -> String {
+        let usd = self.usdString(value)
+        guard let exchangeRate,
+              exchangeRate.baseCurrency.uppercased() == "USD",
+              exchangeRate.quoteCurrency.uppercased() == "CNY",
+              exchangeRate.rate > 0 else
+        {
+            return usd
+        }
+        return "\(self.cnyString(value * exchangeRate.rate)) · \(usd)"
+    }
+
     /// Formats a currency value with the specified currency code.
     /// Uses FormatStyle with explicit en_US locale to ensure consistent formatting
     /// regardless of the user's system locale (e.g., pt-BR users see $54.72 not US$ 54,72).
@@ -206,11 +232,16 @@ public enum UsageFormatter {
         return cleaned.isEmpty ? raw : cleaned
     }
 
-    public static func modelCostDetail(_ model: String, costUSD: Double?, totalTokens: Int? = nil) -> String? {
+    public static func modelCostDetail(
+        _ model: String,
+        costUSD: Double?,
+        totalTokens: Int? = nil,
+        exchangeRate: ExchangeRateSnapshot? = nil) -> String?
+    {
         let costDetail: String? = if let label = CostUsagePricing.codexDisplayLabel(model: model) {
             label
         } else if let costUSD {
-            self.usdString(costUSD)
+            self.usdCNYCostString(costUSD, exchangeRate: exchangeRate)
         } else {
             nil
         }

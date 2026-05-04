@@ -1443,6 +1443,7 @@ extension StatusItemController {
             dashboardError: dashboardError,
             tokenSnapshot: tokenSnapshot,
             tokenError: tokenError,
+            exchangeRate: self.store.usdCNYExchangeRate,
             account: self.store.accountInfo(for: target),
             isRefreshing: self.store.shouldShowRefreshingMenuCard(for: target),
             lastError: errorOverride

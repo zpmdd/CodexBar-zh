@@ -35,8 +35,8 @@ struct CodexBarLocalizationTests {
         #expect(CodexBarL10n.tr("Plan: Plus") == "套餐：Plus")
         #expect(CodexBarL10n.tr("73% left") == "剩余 73%")
         #expect(CodexBarL10n.tr("18% used") == "已用 18%")
-        #expect(CodexBarL10n.tr("33% in reserve") == "预留 33%")
-        #expect(CodexBarL10n.tr("7% in deficit") == "超前消耗 7%")
+        #expect(CodexBarL10n.tr("33% in reserve") == "预留 33%（比预期少用）")
+        #expect(CodexBarL10n.tr("7% in deficit") == "超前消耗 7%（比预期多用）")
         #expect(CodexBarL10n.tr("Lasts until reset") == "可持续到重置")
         #expect(CodexBarL10n.tr("Runs out in 3d") == "将在 3天后耗尽")
         #expect(CodexBarL10n.tr("≈ 70% run-out risk") == "约 70% 耗尽风险")
@@ -48,7 +48,11 @@ struct CodexBarLocalizationTests {
         #expect(CodexBarL10n.tr("Codex: unsupported") == "Codex：不支持")
         #expect(CodexBarL10n.tr("Codex: no data yet") == "Codex：暂无数据")
         #expect(CodexBarL10n.tr("Version 0.23 (58)") == "版本 0.23 (58)")
-        #expect(CodexBarL10n.tr("Partial System Degradation — Updated 5:59") == "部分系统降级 - 更新于 5:59")
+        #expect(
+            CodexBarL10n.tr("Partial System Degradation — Updated 5:59") ==
+                "官方部分服务不稳定 - 更新于 5:59")
+        #expect(CodexBarL10n.tr("Degraded performance") == "官方服务性能下降")
+        #expect(CodexBarL10n.tr("Major System Outage") == "官方服务大范围异常")
     }
 
     @Test

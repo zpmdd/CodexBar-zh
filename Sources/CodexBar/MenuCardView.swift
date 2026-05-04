@@ -660,6 +660,7 @@ extension UsageMenuCardView.Model {
         let dashboardError: String?
         let tokenSnapshot: CostUsageTokenSnapshot?
         let tokenError: String?
+        let exchangeRate: ExchangeRateSnapshot?
         let account: AccountInfo
         let isRefreshing: Bool
         let lastError: String?
@@ -685,6 +686,7 @@ extension UsageMenuCardView.Model {
             dashboardError: String?,
             tokenSnapshot: CostUsageTokenSnapshot?,
             tokenError: String?,
+            exchangeRate: ExchangeRateSnapshot? = nil,
             account: AccountInfo,
             isRefreshing: Bool,
             lastError: String?,
@@ -709,6 +711,7 @@ extension UsageMenuCardView.Model {
             self.dashboardError = dashboardError
             self.tokenSnapshot = tokenSnapshot
             self.tokenError = tokenError
+            self.exchangeRate = exchangeRate
             self.account = account
             self.isRefreshing = isRefreshing
             self.lastError = lastError
@@ -749,7 +752,8 @@ extension UsageMenuCardView.Model {
             provider: input.provider,
             enabled: input.tokenCostUsageEnabled,
             snapshot: input.tokenSnapshot,
-            error: input.tokenError)
+            error: input.tokenError,
+            exchangeRate: input.exchangeRate)
         let subtitle = Self.subtitle(
             snapshot: input.snapshot,
             isRefreshing: input.isRefreshing,
@@ -1452,13 +1456,15 @@ extension UsageMenuCardView.Model {
         provider: UsageProvider,
         enabled: Bool,
         snapshot: CostUsageTokenSnapshot?,
-        error: String?) -> TokenUsageSection?
+        error: String?,
+        exchangeRate: ExchangeRateSnapshot?) -> TokenUsageSection?
     {
         guard provider == .codex || provider == .claude || provider == .vertexai else { return nil }
         guard enabled else { return nil }
         guard let snapshot else { return nil }
 
-        let sessionCost = snapshot.sessionCostUSD.map { UsageFormatter.usdString($0) } ?? "—"
+        let sessionCost = snapshot.sessionCostUSD
+            .map { UsageFormatter.usdCNYCostString($0, exchangeRate: exchangeRate) } ?? "—"
         let sessionTokens = snapshot.sessionTokens.map { UsageFormatter.tokenCountString($0) }
         let sessionLine: String = {
             if let sessionTokens {
@@ -1467,7 +1473,8 @@ extension UsageMenuCardView.Model {
             return "Today: \(sessionCost)"
         }()
 
-        let monthCost = snapshot.last30DaysCostUSD.map { UsageFormatter.usdString($0) } ?? "—"
+        let monthCost = snapshot.last30DaysCostUSD
+            .map { UsageFormatter.usdCNYCostString($0, exchangeRate: exchangeRate) } ?? "—"
         let fallbackTokens = snapshot.daily.compactMap(\.totalTokens).reduce(0, +)
         let monthTokensValue = snapshot.last30DaysTokens ?? (fallbackTokens > 0 ? fallbackTokens : nil)
         let monthTokens = monthTokensValue.map { UsageFormatter.tokenCountString($0) }

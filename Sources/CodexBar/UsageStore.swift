@@ -29,6 +29,7 @@ extension UsageStore {
         _ = self.statuses
         _ = self.probeLogs
         _ = self.historicalPaceRevision
+        _ = self.usdCNYExchangeRate
         return 0
     }
 
@@ -142,6 +143,7 @@ final class UsageStore {
     var statuses: [UsageProvider: ProviderStatus] = [:]
     var probeLogs: [UsageProvider: String] = [:]
     var historicalPaceRevision: Int = 0
+    var usdCNYExchangeRate: ExchangeRateSnapshot?
     @ObservationIgnored var lastCreditsSnapshot: CreditsSnapshot?
     @ObservationIgnored var lastCreditsSnapshotAccountKey: String?
     @ObservationIgnored var lastCreditsSource: CodexCreditsSource = .none
@@ -176,6 +178,7 @@ final class UsageStore {
     @ObservationIgnored let codexFetcher: UsageFetcher
     @ObservationIgnored let claudeFetcher: any ClaudeUsageFetching
     @ObservationIgnored private let costUsageFetcher: CostUsageFetcher
+    @ObservationIgnored let exchangeRateStore: USDToCNYExchangeRateStore
     @ObservationIgnored let browserDetection: BrowserDetection
     @ObservationIgnored private let registry: ProviderRegistry
     @ObservationIgnored let settings: SettingsStore
@@ -195,6 +198,8 @@ final class UsageStore {
     @ObservationIgnored private var timerTask: Task<Void, Never>?
     @ObservationIgnored private var tokenTimerTask: Task<Void, Never>?
     @ObservationIgnored private var tokenRefreshSequenceTask: Task<Void, Never>?
+    @ObservationIgnored var exchangeRateRefreshTask: Task<Void, Never>?
+    @ObservationIgnored var lastExchangeRateRefreshAttemptAt: Date?
     @ObservationIgnored private var pathDebugRefreshTask: Task<Void, Never>?
     @ObservationIgnored var codexPlanHistoryBackfillTask: Task<Void, Never>?
     @ObservationIgnored let historicalUsageHistoryStore: HistoricalUsageHistoryStore
@@ -229,6 +234,7 @@ final class UsageStore {
         self.browserDetection = browserDetection
         self.claudeFetcher = claudeFetcher ?? ClaudeUsageFetcher(browserDetection: browserDetection)
         self.costUsageFetcher = costUsageFetcher
+        self.exchangeRateStore = USDToCNYExchangeRateStore(userDefaults: settings.userDefaults)
         self.settings = settings
         self.registry = registry
         self.environmentBase = environmentBase
@@ -258,6 +264,7 @@ final class UsageStore {
         })
         self.planUtilizationHistory = planUtilizationHistoryStore.load()
         self.weeklyLimitResetDetectorStates = Self.loadWeeklyLimitResetDetectorStates(from: settings.userDefaults)
+        self.usdCNYExchangeRate = self.exchangeRateStore.cachedSnapshot()
         self.logStartupState()
         self.bindSettings()
         self.pathDebugInfo = PathDebugSnapshot(
@@ -598,6 +605,7 @@ final class UsageStore {
         self.timerTask?.cancel()
         self.tokenTimerTask?.cancel()
         self.tokenRefreshSequenceTask?.cancel()
+        self.exchangeRateRefreshTask?.cancel()
         self.codexPlanHistoryBackfillTask?.cancel()
     }
 
@@ -1290,6 +1298,7 @@ extension UsageStore {
             self.tokenSnapshots[provider] = snapshot
             self.tokenErrors[provider] = nil
             self.tokenFailureGates[provider]?.recordSuccess()
+            self.scheduleExchangeRateRefreshIfNeededForCostDisplay()
             self.persistWidgetSnapshot(reason: "token-usage")
         } catch {
             if error is CancellationError { return }

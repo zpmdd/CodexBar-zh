@@ -236,6 +236,12 @@ struct MenuCardModelTests {
             last30DaysCostUSD: 78.9,
             daily: [],
             updatedAt: now)
+        let exchangeRate = ExchangeRateSnapshot(
+            baseCurrency: "USD",
+            quoteCurrency: "CNY",
+            rate: 7,
+            rateDate: "2026-05-04",
+            fetchedAt: now)
         let model = UsageMenuCardView.Model.make(.init(
             provider: .codex,
             metadata: metadata,
@@ -246,6 +252,7 @@ struct MenuCardModelTests {
             dashboardError: nil,
             tokenSnapshot: tokenSnapshot,
             tokenError: nil,
+            exchangeRate: exchangeRate,
             account: AccountInfo(email: nil, plan: nil),
             isRefreshing: false,
             lastError: nil,
@@ -256,8 +263,8 @@ struct MenuCardModelTests {
             hidePersonalInfo: false,
             now: now))
 
-        #expect(model.tokenUsage?.monthLine.contains("456") == true)
-        #expect(model.tokenUsage?.monthLine.contains("tokens") == true)
+        #expect(model.tokenUsage?.sessionLine == "Today: ¥8.61 · $1.23 · 123 tokens")
+        #expect(model.tokenUsage?.monthLine == "Last 30 days: ¥552.30 · $78.90 · 456 tokens")
     }
 
     @Test

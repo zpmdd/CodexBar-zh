@@ -35,13 +35,21 @@ struct CostHistoryChartMenuView: View {
     private let provider: UsageProvider
     private let daily: [DailyEntry]
     private let totalCostUSD: Double?
+    private let exchangeRate: ExchangeRateSnapshot?
     private let width: CGFloat
     @State private var selectedDateKey: String?
 
-    init(provider: UsageProvider, daily: [DailyEntry], totalCostUSD: Double?, width: CGFloat) {
+    init(
+        provider: UsageProvider,
+        daily: [DailyEntry],
+        totalCostUSD: Double?,
+        exchangeRate: ExchangeRateSnapshot? = nil,
+        width: CGFloat)
+    {
         self.provider = provider
         self.daily = daily
         self.totalCostUSD = totalCostUSD
+        self.exchangeRate = exchangeRate
         self.width = width
     }
 
@@ -145,7 +153,7 @@ struct CostHistoryChartMenuView: View {
             }
 
             if let total = self.totalCostUSD {
-                LText("Total (30d): \(UsageFormatter.usdString(total))")
+                LText("Total (30d): \(UsageFormatter.usdCNYCostString(total, exchangeRate: self.exchangeRate))")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -353,7 +361,7 @@ struct CostHistoryChartMenuView: View {
         }
 
         let dayLabel = date.formatted(.dateTime.month(.abbreviated).day())
-        let cost = UsageFormatter.usdString(point.costUSD)
+        let cost = UsageFormatter.usdCNYCostString(point.costUSD, exchangeRate: self.exchangeRate)
         let primary = if let tokens = point.totalTokens {
             "\(dayLabel): \(cost) · \(UsageFormatter.tokenCountString(tokens)) tokens"
         } else {
@@ -387,7 +395,8 @@ struct CostHistoryChartMenuView: View {
                     subtitle: UsageFormatter.modelCostDetail(
                         item.modelName,
                         costUSD: item.costUSD,
-                        totalTokens: item.totalTokens),
+                        totalTokens: item.totalTokens,
+                        exchangeRate: self.exchangeRate),
                     accentColor: model.barColor.opacity(Self.breakdownAccentOpacity(for: index)))
             }
     }

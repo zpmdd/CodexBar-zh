@@ -118,8 +118,8 @@ struct ChineseScreenshotRenderTests {
             creditsHintCopyText: nil,
             providerCost: nil,
             tokenUsage: UsageMenuCardView.Model.TokenUsageSection(
-                sessionLine: "Today: $36.84 · 46M tokens",
-                monthLine: "Last 30 days: $1,553.97 · 3.2B tokens",
+                sessionLine: "Today: ¥424.91 · $62.22 · 78M tokens",
+                monthLine: "Last 30 days: ¥10,786.12 · $1,579.35 · 3.3B tokens",
                 hintLine: nil,
                 errorLine: nil,
                 errorCopyText: nil),

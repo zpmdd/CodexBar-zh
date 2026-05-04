@@ -193,11 +193,11 @@ enum CodexBarL10n {
         }
         if text.hasSuffix("% in reserve") {
             let stem = String(text.dropLast("% in reserve".count))
-            return "预留 \(stem)%"
+            return "预留 \(stem)%（比预期少用）"
         }
         if text.hasSuffix("% in deficit") {
             let stem = String(text.dropLast("% in deficit".count))
-            return "超前消耗 \(stem)%"
+            return "超前消耗 \(stem)%（比预期多用）"
         }
         if text.hasPrefix("Runs out in ") {
             let tail = String(text.dropFirst("Runs out in ".count))
@@ -330,7 +330,7 @@ enum CodexBarL10n {
         "Could not open Terminal for Gemini": "无法为 Gemini 打开终端",
         "Could not start claude /login": "无法启动 claude /login",
         "Cost": "费用",
-        "Critical issue": "严重问题",
+        "Critical issue": "官方服务严重异常",
         "Credits": "积分",
         "Credits remaining": "剩余积分",
         "Current": "当前",
@@ -342,7 +342,7 @@ enum CodexBarL10n {
         "Disable OpenAI dashboard cookie usage.": "禁用 OpenAI 看板 cookie 用法。",
         "Disable Keychain access": "禁用钥匙串访问",
         "Disable all Keychain reads and writes. Browser cookie import is unavailable; paste Cookie headers manually in Providers.": "禁用所有钥匙串读写。浏览器 cookie 导入将不可用；请在“服务”中手动粘贴 Cookie headers。",
-        "Degraded performance": "性能下降",
+        "Degraded performance": "官方服务性能下降",
         "Desktop App": "桌面应用",
         "Drag to reorder": "拖动排序",
         "Email": "邮件",
@@ -389,8 +389,8 @@ enum CodexBarL10n {
         "Logging": "日志",
         "Login Failed": "登录失败",
         "Login shell PATH (startup capture)": "登录 shell PATH（启动时捕获）",
-        "Major outage": "重大中断",
-        "Major System Outage": "重大系统中断",
+        "Major outage": "官方服务大范围异常",
+        "Major System Outage": "官方服务大范围异常",
         "Manual": "手动",
         "May your tokens never run out—keep agent limits in view.": "愿你的 token 永不耗尽 - 随时掌握智能体限额。",
         "MCP details": "MCP 详情",
@@ -400,7 +400,7 @@ enum CodexBarL10n {
         "Menu bar shows percent": "菜单栏显示百分比",
         "Menu content": "菜单内容",
         "Merge Icons": "合并图标",
-        "Minor Service Outage": "局部服务中断",
+        "Minor Service Outage": "官方部分服务中断",
         "Monthly": "月度",
         "Near full": "接近满额",
         "No data available": "暂无数据",
@@ -472,8 +472,8 @@ enum CodexBarL10n {
         "Paste the Cookie header from a request to admin.mistral.ai. Must contain an ory_session_* cookie.": "粘贴来自 admin.mistral.ai 请求的 Cookie header，必须包含 ory_session_* cookie。",
         "Play full-screen confetti when weekly usage resets.": "每周用量重置时播放全屏彩带效果。",
         "Plan": "套餐",
-        "Partial outage": "部分服务中断",
-        "Partial System Degradation": "部分系统降级",
+        "Partial outage": "官方部分服务中断",
+        "Partial System Degradation": "官方部分服务不稳定",
         "Maintenance": "维护中",
         "Please complete the login in your browser.\nThis window will close automatically when finished.": "请在浏览器里完成登录。\n完成后此窗口会自动关闭。",
         "Polls OpenAI/Claude status pages and Google Workspace for Gemini/Antigravity, surfacing incidents in the icon and menu.": "轮询 OpenAI/Claude 状态页以及 Gemini/Antigravity 的 Google Workspace 状态，并在图标和菜单中提示事故。",

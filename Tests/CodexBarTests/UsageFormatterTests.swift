@@ -118,6 +118,29 @@ struct UsageFormatterTests {
     }
 
     @Test
+    func `cost detail shows CNY before USD when exchange rate is available`() {
+        let exchangeRate = ExchangeRateSnapshot(
+            baseCurrency: "USD",
+            quoteCurrency: "CNY",
+            rate: 7,
+            rateDate: "2026-05-04",
+            fetchedAt: Date(timeIntervalSince1970: 1_777_000_000))
+
+        #expect(UsageFormatter.cnyString(435.54) == "¥435.54")
+        #expect(
+            UsageFormatter.usdCNYCostString(62.22, exchangeRate: exchangeRate) ==
+                "¥435.54 · $62.22")
+        #expect(UsageFormatter.usdCNYCostString(62.22, exchangeRate: nil) == "$62.22")
+        #expect(
+            UsageFormatter.modelCostDetail(
+                "gpt-5.2-codex",
+                costUSD: 0.42,
+                totalTokens: 1200,
+                exchangeRate: exchangeRate) ==
+                "¥2.94 · $0.42 · 1.2K")
+    }
+
+    @Test
     func `clean plan maps O auth to ollama`() {
         #expect(UsageFormatter.cleanPlanName("oauth") == "Ollama")
     }

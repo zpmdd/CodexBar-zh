@@ -123,6 +123,7 @@ extension StatusItemController {
     {
         guard let tokenSnapshot = self.store.tokenSnapshot(for: provider) else { return false }
         guard !tokenSnapshot.daily.isEmpty else { return false }
+        self.store.scheduleExchangeRateRefreshIfNeededForCostDisplay()
 
         if !Self.menuCardRenderingEnabled {
             let chartItem = NSMenuItem()
@@ -136,6 +137,7 @@ extension StatusItemController {
             provider: provider,
             daily: tokenSnapshot.daily,
             totalCostUSD: tokenSnapshot.last30DaysCostUSD,
+            exchangeRate: self.store.usdCNYExchangeRate,
             width: width)
         let hosting = MenuHostingView(rootView: chartView)
         let controller = NSHostingController(rootView: chartView)
