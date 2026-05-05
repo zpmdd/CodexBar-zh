@@ -1,7 +1,9 @@
-# CodexBar 简体中文本地化
+# CodexBar 简体中文本地化 / Simplified Chinese Localization
 
 <p align="center">
   <a href="https://github.com/steipete/CodexBar">上游项目</a>
+  ·
+  <a href="#english-overview">English</a>
   ·
   <a href="#安装">安装</a>
   ·
@@ -20,6 +22,30 @@
   <img alt="Swift" src="https://img.shields.io/badge/Swift-6-orange">
   <img alt="Localization" src="https://img.shields.io/badge/localization-en%20%7C%20zh--Hans-success">
 </p>
+
+## English Overview
+
+This repository is a Simplified Chinese localization fork of [CodexBar](https://github.com/steipete/CodexBar), a macOS menu bar app for monitoring AI agent quota, usage, costs, credits, and provider status.
+
+The v2 localization keeps the app in the official shape: the app is still named `CodexBar`, translations live in native Apple localization resources, and users can switch between `System`, `English`, and `Simplified Chinese` from Settings. When an upstream string has not been translated yet, CodexBar safely falls back to the original English text instead of showing an empty label or a broken key.
+
+Highlights:
+
+- Native English / Simplified Chinese language switch inside the app.
+- Localized menu, settings, charts, widgets, dialogs, and human-facing CLI output.
+- RMB cost estimates shown together with the original USD and token totals.
+- Chrome-first OpenAI Web Dashboard cookie import for Codex session/weekly breakdowns, credits history, and chart details.
+- Upstream-friendly localization structure designed to make future CodexBar updates easier to merge.
+
+Install without Xcode:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/zpmdd/CodexBar-zh/main/Scripts/install_latest_zh.sh)"
+```
+
+The installer downloads the latest GitHub Release and installs `/Applications/CodexBar.app`. The current public build is ad-hoc signed, so it is intended as a community localization build rather than an official notarized upstream release.
+
+## 中文概览
 
 本仓库基于 [CodexBar](https://github.com/steipete/CodexBar) 做简体中文本地化。二版不再把应用做成 `CodexBar 中文.app`，而是保持原应用名称 `CodexBar`，通过原生本地化资源和设置内语言切换提供 English / 简体中文 / 跟随系统。
 
