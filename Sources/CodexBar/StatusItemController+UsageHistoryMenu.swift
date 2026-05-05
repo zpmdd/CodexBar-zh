@@ -58,6 +58,7 @@ extension StatusItemController {
             histories: histories,
             snapshot: snapshot,
             width: width)
+            .environment(\.locale, self.settings.appLanguage.effectiveLocale())
         let hosting = UsageHistoryMenuHostingView(rootView: chartView)
         let controller = NSHostingController(rootView: chartView)
         let size = controller.sizeThatFits(in: CGSize(width: width, height: .greatestFiniteMagnitude))

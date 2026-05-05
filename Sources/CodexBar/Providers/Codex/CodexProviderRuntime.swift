@@ -8,8 +8,11 @@ final class CodexProviderRuntime: ProviderRuntime {
     func perform(action: ProviderRuntimeAction, context: ProviderRuntimeContext) async {
         switch action {
         case let .openAIWebAccessToggled(enabled):
-            guard enabled == false else { return }
-            context.store.resetOpenAIWebState()
+            if enabled {
+                await context.store.refreshOpenAIDashboardIfNeeded(force: true, bypassCoalescing: true)
+            } else {
+                context.store.resetOpenAIWebState()
+            }
         case .forceSessionRefresh:
             break
         }

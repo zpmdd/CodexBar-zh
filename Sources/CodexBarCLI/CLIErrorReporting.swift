@@ -119,7 +119,7 @@ extension CodexBarCLI {
                 error: self.makeErrorPayload(error, kind: kind))
             self.printJSON([payload], pretty: output.pretty)
         } else {
-            self.writeStderr("Error: \(error.localizedDescription)\n")
+            self.writeStderr("\(CLIL10n.tr("Error")): \(error.localizedDescription)\n")
         }
     }
 }

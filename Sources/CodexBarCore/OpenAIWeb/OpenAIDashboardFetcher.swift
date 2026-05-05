@@ -19,8 +19,13 @@ public struct OpenAIDashboardFetcher {
         }
     }
 
-    private let usageURL = URL(string: "https://chatgpt.com/codex/cloud/settings/analytics#usage")!
+    nonisolated static let preferredUsageURL = URL(string: "https://chatgpt.com/codex/settings/usage")!
+
+    private let usageURL = Self.preferredUsageURL
     private nonisolated static let dashboardAcceptLanguage = "en-US,en;q=0.9"
+    nonisolated static let browserUserAgent =
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
     private nonisolated static let dashboardUsageAPIURL = URL(string: "https://chatgpt.com/backend-api/wham/usage")!
 
     public init() {}
@@ -400,6 +405,11 @@ public struct OpenAIDashboardFetcher {
         OpenAIDashboardWebViewCache.shared.evictAll()
     }
 
+    public static func evictCachedWebView(accountEmail: String?) {
+        let store = OpenAIDashboardWebsiteDataStore.store(forAccountEmail: accountEmail)
+        OpenAIDashboardWebViewCache.shared.evict(websiteDataStore: store)
+    }
+
     public func probeUsagePage(
         websiteDataStore: WKWebsiteDataStore,
         logger: ((String) -> Void)? = nil,
@@ -666,7 +676,7 @@ public struct OpenAIDashboardFetcher {
         request.setValue(cookieHeader, forHTTPHeaderField: "Cookie")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue(Self.dashboardAcceptLanguage, forHTTPHeaderField: "Accept-Language")
-        request.setValue("CodexBar", forHTTPHeaderField: "User-Agent")
+        request.setValue(Self.browserUserAgent, forHTTPHeaderField: "User-Agent")
         return request
     }
 
@@ -677,7 +687,7 @@ public struct OpenAIDashboardFetcher {
         request.setValue(cookieHeader, forHTTPHeaderField: "Cookie")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue(Self.dashboardAcceptLanguage, forHTTPHeaderField: "Accept-Language")
-        request.setValue("CodexBar", forHTTPHeaderField: "User-Agent")
+        request.setValue(Self.browserUserAgent, forHTTPHeaderField: "User-Agent")
         return request
     }
 

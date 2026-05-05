@@ -41,7 +41,7 @@ enum CLIRenderer {
             lines: &lines)
 
         if let status = context.status {
-            let statusLine = "Status: \(status.indicator.label)\(status.descriptionSuffix)"
+            let statusLine = "\(CLIL10n.tr("Status")): \(status.indicator.label)\(status.descriptionSuffix)"
             lines.append(self.colorize(statusLine, indicator: status.indicator, useColor: context.useColor))
         }
 
@@ -53,9 +53,12 @@ enum CLIRenderer {
             remaining: window.remainingPercent,
             used: window.usedPercent,
             showUsed: false)
-        let colored = self.colorizeUsage(text, remainingPercent: window.remainingPercent, useColor: useColor)
+        let colored = self.colorizeUsage(
+            CLIL10n.tr(text),
+            remainingPercent: window.remainingPercent,
+            useColor: useColor)
         let bar = self.usageBar(remainingPercent: window.remainingPercent, useColor: useColor)
-        return "\(title): \(colored) \(bar)"
+        return "\(CLIL10n.tr(title)): \(colored) \(bar)"
     }
 
     // swiftlint:disable:next function_parameter_count
@@ -275,11 +278,13 @@ enum CLIRenderer {
     }
 
     private static func label(_ text: String, useColor: Bool) -> String {
+        let text = CLIL10n.tr(text)
         guard useColor else { return text }
         return self.ansi(self.accentColor, text)
     }
 
     private static func subtleLine(_ text: String, useColor: Bool) -> String {
+        let text = CLIL10n.tr(text)
         guard useColor else { return text }
         return self.ansi(self.subtleColor, text)
     }
@@ -307,10 +312,10 @@ enum CLIRenderer {
 
         let expected = Int(pace.expectedUsedPercent.rounded())
         var parts: [String] = []
-        parts.append(Self.paceLeftLabel(for: pace))
-        parts.append("Expected \(expected)% used")
+        parts.append(CLIL10n.tr(Self.paceLeftLabel(for: pace)))
+        parts.append(CLIL10n.tr("Expected \(expected)% used"))
         if let rightLabel = Self.paceRightLabel(for: pace, now: now) {
-            parts.append(rightLabel)
+            parts.append(CLIL10n.tr(rightLabel))
         }
         let label = self.label("Pace", useColor: useColor)
         return "\(label): \(parts.joined(separator: " | "))"

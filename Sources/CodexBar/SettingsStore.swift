@@ -168,6 +168,9 @@ final class SettingsStore {
         self.config = config
         self.configLoading = true
         self.defaultsState = Self.loadDefaultsState(userDefaults: userDefaults)
+        if !Self.isRunningTests {
+            AppLanguageRuntime.setInMemoryPreference(self.appLanguage)
+        }
         self.updateProviderState(config: config)
         self.configLoading = false
         CodexBarLog.setFileLoggingEnabled(self.debugFileLoggingEnabled)
@@ -185,6 +188,7 @@ final class SettingsStore {
                 config: config,
                 hadExistingConfig: hadExistingConfig)
         }
+        self.repairOpenAIWebCookieSourceIfNeeded()
         if Self.shouldBridgeSharedDefaults(for: userDefaults) {
             Self.sharedDefaults?.set(self.debugDisableKeychainAccess, forKey: "debugDisableKeychainAccess")
         }
@@ -203,6 +207,13 @@ extension SettingsStore {
         return hadExistingConfig
     }
 
+    private func repairOpenAIWebCookieSourceIfNeeded() {
+        guard self.openAIWebAccessEnabled,
+              self.configSnapshot.providerConfig(for: .codex)?.cookieSource == .off
+        else { return }
+        self.codexCookieSource = .auto
+    }
+
     private static func loadDefaultsState(userDefaults: UserDefaults) -> SettingsDefaultsState {
         let refreshDefault = userDefaults.string(forKey: "refreshFrequency")
             .flatMap(RefreshFrequency.init(rawValue:))
@@ -210,6 +221,8 @@ extension SettingsStore {
         if refreshDefault == nil {
             userDefaults.set(refreshFrequency.rawValue, forKey: "refreshFrequency")
         }
+        let appLanguageRaw = userDefaults.string(forKey: AppLanguagePreference.userDefaultsKey)
+            ?? Self.sharedDefaults?.string(forKey: AppLanguagePreference.userDefaultsKey)
         let launchAtLogin = userDefaults.object(forKey: "launchAtLogin") as? Bool ?? false
         let debugMenuEnabled = userDefaults.object(forKey: "debugMenuEnabled") as? Bool ?? false
         let debugDisableKeychainAccess: Bool = {
@@ -285,6 +298,7 @@ extension SettingsStore {
 
         return SettingsDefaultsState(
             refreshFrequency: refreshFrequency,
+            appLanguageRaw: appLanguageRaw,
             launchAtLogin: launchAtLogin,
             debugMenuEnabled: debugMenuEnabled,
             debugDisableKeychainAccess: debugDisableKeychainAccess,

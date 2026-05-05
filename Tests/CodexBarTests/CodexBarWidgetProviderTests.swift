@@ -114,4 +114,12 @@ struct CodexBarWidgetProviderTests {
         #expect(compactIntent.provider == .codex)
         #expect(compactIntent.metric == .credits)
     }
+
+    @Test
+    func `widget localization uses app language preference and falls back to English`() {
+        AppLanguageRuntime.withPreference(.simplifiedChinese) {
+            #expect(WidgetL10n.tr("Open CodexBar") == "打开 CodexBar")
+            #expect(WidgetL10n.tr("Untranslated widget text") == "Untranslated widget text")
+        }
+    }
 }

@@ -12,7 +12,7 @@ extension CodexBarCLI {
         switch output.format {
         case .text:
             if issues.isEmpty {
-                print("Config: OK")
+                print(CLIL10n.tr("Config: OK"))
             } else {
                 for issue in issues {
                     let provider = issue.provider?.rawValue ?? "config"

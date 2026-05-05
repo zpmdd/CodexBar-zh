@@ -746,6 +746,30 @@ struct SettingsStoreTests {
     }
 
     @Test
+    func `repairs enabled open AI web access with disabled codex cookie source`() throws {
+        let suite = "SettingsStoreTests-openai-web-enabled-cookie-off"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defaults.removePersistentDomain(forName: suite)
+        defaults.set(true, forKey: "openAIWebAccessEnabled")
+        defaults.set(false, forKey: "debugDisableKeychainAccess")
+        let configStore = testConfigStore(suiteName: suite)
+        try configStore.save(CodexBarConfig(providers: [
+            ProviderConfig(id: .codex, cookieSource: .off),
+        ]))
+
+        let store = SettingsStore(
+            userDefaults: defaults,
+            configStore: configStore,
+            zaiTokenStore: NoopZaiTokenStore(),
+            syntheticTokenStore: NoopSyntheticTokenStore())
+
+        #expect(store.openAIWebAccessEnabled == true)
+        #expect(store.codexCookieSource == .auto)
+        let repairedConfig = try #require(try configStore.load())
+        #expect(repairedConfig.providerConfig(for: .codex)?.cookieSource == .auto)
+    }
+
+    @Test
     func `disabling open AI web access turns codex cookie source off`() throws {
         let suite = "SettingsStoreTests-openai-web-toggle"
         let defaults = try #require(UserDefaults(suiteName: suite))

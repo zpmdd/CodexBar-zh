@@ -500,6 +500,7 @@ final class UsageStore {
 
             // OpenAI web scrape depends on the current Codex account email (which can change after login/account
             // switch). Run this after Codex usage refresh so we don't accidentally scrape with stale credentials.
+            self.restoreOpenAIDashboardCacheIfAvailable()
             self.syncOpenAIWebState()
             let refreshPolicy = OpenAIWebRefreshPolicyContext(
                 accessEnabled: self.isEnabled(.codex) &&

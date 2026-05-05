@@ -3,7 +3,7 @@ set -euo pipefail
 
 REPO=${CODEXBAR_ZH_REPO:-zpmdd/CodexBar-zh}
 ASSET=${CODEXBAR_ZH_ASSET:-CodexBar-zh-macos-universal.zip}
-APP_NAME="CodexBar 中文"
+APP_NAME="CodexBar"
 URL=${CODEXBAR_ZH_URL:-"https://github.com/${REPO}/releases/latest/download/${ASSET}"}
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/codexbar-zh.XXXXXX")
 

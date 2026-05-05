@@ -16,9 +16,9 @@
 ## 本仓库采取的合规措施
 
 - 根目录保留 `LICENSE`，并保留 Peter Steinberger 的原始版权声明。
-- 新增 `NOTICE.md`，说明上游项目、许可、非官方身份和独立安装策略。
+- 新增 `NOTICE.md`，说明上游项目、许可和非官方身份。
 - README 明确标注上游仓库和官方安装方式。
-- 中文构建安装为 `/Applications/CodexBar 中文.app`，不覆盖 `/Applications/CodexBar.app`。
+- 二版本地化构建保持应用名称 `CodexBar`，中文通过设置内语言切换提供。
 
 ## 非法律意见
 

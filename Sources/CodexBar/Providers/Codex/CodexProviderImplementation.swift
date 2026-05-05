@@ -62,7 +62,13 @@ struct CodexProviderImplementation: ProviderImplementation {
         let extrasBinding = Binding(
             get: { context.settings.openAIWebAccessEnabled },
             set: { enabled in
-                context.settings.openAIWebAccessEnabled = enabled
+                if enabled,
+                   context.settings.providerConfig(for: .codex)?.cookieSource == .off
+                {
+                    context.settings.codexCookieSource = .auto
+                } else {
+                    context.settings.openAIWebAccessEnabled = enabled
+                }
                 Task { @MainActor in
                     await context.store.performRuntimeAction(
                         .openAIWebAccessToggled(enabled),

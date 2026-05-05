@@ -1,6 +1,6 @@
 # Notices
 
-CodexBar 中文版 is a Chinese-localized derivative of CodexBar.
+CodexBar-zh is a Chinese localization derivative of CodexBar.
 
 Original project:
 
@@ -11,4 +11,4 @@ Original project:
 
 This repository keeps the upstream copyright notice and MIT license text. The Chinese localization changes, packaging adjustments, and documentation in this repository are also distributed under the MIT License.
 
-This project is not an official CodexBar release. It installs as `CodexBar 中文.app` so the official `/Applications/CodexBar.app` and its update path remain untouched.
+This project is not an official CodexBar release. The v2 localization keeps the application name `CodexBar` and adds language switching through native localization resources.

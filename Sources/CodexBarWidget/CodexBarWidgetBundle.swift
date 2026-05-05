@@ -20,6 +20,7 @@ struct CodexBarSwitcherWidget: Widget {
             provider: CodexBarSwitcherTimelineProvider())
         { entry in
             CodexBarSwitcherWidgetView(entry: entry)
+                .environment(\.locale, WidgetL10n.locale)
         }
         .configurationDisplayName("CodexBar Switcher")
         .description("Usage widget with a provider switcher.")
@@ -37,6 +38,7 @@ struct CodexBarUsageWidget: Widget {
             provider: CodexBarTimelineProvider())
         { entry in
             CodexBarUsageWidgetView(entry: entry)
+                .environment(\.locale, WidgetL10n.locale)
         }
         .configurationDisplayName("CodexBar Usage")
         .description("Session and weekly usage with credits and costs.")
@@ -54,6 +56,7 @@ struct CodexBarHistoryWidget: Widget {
             provider: CodexBarTimelineProvider())
         { entry in
             CodexBarHistoryWidgetView(entry: entry)
+                .environment(\.locale, WidgetL10n.locale)
         }
         .configurationDisplayName("CodexBar History")
         .description("Usage history chart with recent totals.")
@@ -71,6 +74,7 @@ struct CodexBarCompactWidget: Widget {
             provider: CodexBarCompactTimelineProvider())
         { entry in
             CodexBarCompactWidgetView(entry: entry)
+                .environment(\.locale, WidgetL10n.locale)
         }
         .configurationDisplayName("CodexBar Metric")
         .description("Compact widget for credits or cost.")

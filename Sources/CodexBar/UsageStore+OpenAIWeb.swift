@@ -278,6 +278,75 @@ extension UsageStore {
         }
     }
 
+    @discardableResult
+    func restoreOpenAIDashboardCacheIfAvailable() -> Bool {
+        guard self.isEnabled(.codex),
+              self.settings.openAIWebAccessEnabled,
+              self.settings.codexCookieSource.isEnabled,
+              self.openAIDashboard == nil,
+              let cache = OpenAIDashboardCacheStore.load(),
+              let usage = self.snapshots[.codex]
+        else {
+            return false
+        }
+
+        let dashboard = Self.normalizedCachedOpenAIDashboardSnapshot(cache.snapshot)
+        let input = self.makeCachedCodexDashboardAuthorityInput(
+            dashboard: dashboard,
+            cachedAccountEmail: cache.accountEmail,
+            usage: usage,
+            sourceLabel: self.lastSourceLabels[.codex] ?? "")
+        let decision = CodexDashboardAuthority.evaluate(input)
+        guard decision.allowedEffects.contains(.cachedDashboardReuse) else {
+            if decision.cleanup.contains(.dashboardCache) {
+                OpenAIDashboardCacheStore.clear()
+            }
+            return false
+        }
+
+        self.openAIDashboard = dashboard
+        self.openAIDashboardAttachmentAuthorized = true
+        self.lastOpenAIDashboardSnapshot = dashboard
+        self.lastOpenAIDashboardAttachmentAuthorized = true
+        self.lastOpenAIDashboardError = nil
+        self.openAIDashboardRequiresLogin = false
+        self.lastOpenAIDashboardTargetEmail = Self.normalizeCodexAccountScopedEmail(cache.accountEmail)
+        return true
+    }
+
+    private nonisolated static func normalizedCachedOpenAIDashboardSnapshot(
+        _ snapshot: OpenAIDashboardSnapshot) -> OpenAIDashboardSnapshot
+    {
+        guard snapshot.dailyBreakdown.isEmpty, !snapshot.creditEvents.isEmpty else {
+            return snapshot
+        }
+
+        return OpenAIDashboardSnapshot(
+            signedInEmail: snapshot.signedInEmail,
+            codeReviewRemainingPercent: snapshot.codeReviewRemainingPercent,
+            codeReviewLimit: snapshot.codeReviewLimit,
+            creditEvents: snapshot.creditEvents,
+            dailyBreakdown: OpenAIDashboardSnapshot.makeDailyBreakdown(
+                from: snapshot.creditEvents,
+                maxDays: 30),
+            usageBreakdown: snapshot.usageBreakdown,
+            creditsPurchaseURL: snapshot.creditsPurchaseURL,
+            primaryLimit: snapshot.primaryLimit,
+            secondaryLimit: snapshot.secondaryLimit,
+            creditsRemaining: snapshot.creditsRemaining,
+            accountPlan: snapshot.accountPlan,
+            updatedAt: snapshot.updatedAt)
+    }
+
+    nonisolated static func shouldTrustCachedDashboardUsageEmail(sourceLabel: String) -> Bool {
+        switch sourceLabel.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
+        case "codex-cli", "oauth":
+            true
+        default:
+            false
+        }
+    }
+
     private func clearDashboardDerivedCodexUsageIfNeeded() {
         guard self.lastSourceLabels[.codex] == "openai-web" else { return }
         self.snapshots.removeValue(forKey: .codex)

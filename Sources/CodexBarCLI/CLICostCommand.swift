@@ -17,13 +17,13 @@ extension CodexBarCLI {
                 .sorted()
                 .joined(separator: ", ")
             if !output.jsonOnly {
-                Self.writeStderr("Skipping providers without local cost usage: \(names)\n")
+                Self.writeStderr("\(CLIL10n.tr("Skipping providers without local cost usage")): \(names)\n")
             }
         }
         guard !providers.isEmpty else {
             Self.exit(
                 code: .failure,
-                message: "Error: cost is only supported for Claude and Codex.",
+                message: CLIL10n.tr("Error: cost is only supported for Claude and Codex."),
                 output: output,
                 kind: .args)
         }
@@ -54,7 +54,7 @@ extension CodexBarCLI {
                 if format == .json {
                     payload.append(Self.makeCostPayload(provider: provider, snapshot: nil, error: error))
                 } else if !output.jsonOnly {
-                    Self.writeStderr("Error: \(error.localizedDescription)\n")
+                    Self.writeStderr("\(CLIL10n.tr("Error")): \(error.localizedDescription)\n")
                 }
             }
         }
@@ -79,15 +79,19 @@ extension CodexBarCLI {
         useColor: Bool) -> String
     {
         let name = ProviderDescriptorRegistry.descriptor(for: provider).metadata.displayName
-        let header = Self.costHeaderLine("\(name) Cost (local)", useColor: useColor)
+        let header = Self.costHeaderLine("\(name) \(CLIL10n.tr("Cost")) (local)", useColor: useColor)
 
         let todayCost = snapshot.sessionCostUSD.map { UsageFormatter.usdString($0) } ?? "—"
         let todayTokens = snapshot.sessionTokens.map { UsageFormatter.tokenCountString($0) }
-        let todayLine = todayTokens.map { "Today: \(todayCost) · \($0) tokens" } ?? "Today: \(todayCost)"
+        let todayLine = todayTokens
+            .map { CLIL10n.tr("Today: \(todayCost) · \($0) tokens") }
+            ?? CLIL10n.tr("Today: \(todayCost)")
 
         let monthCost = snapshot.last30DaysCostUSD.map { UsageFormatter.usdString($0) } ?? "—"
         let monthTokens = snapshot.last30DaysTokens.map { UsageFormatter.tokenCountString($0) }
-        let monthLine = monthTokens.map { "Last 30 days: \(monthCost) · \($0) tokens" } ?? "Last 30 days: \(monthCost)"
+        let monthLine = monthTokens
+            .map { CLIL10n.tr("Last 30 days: \(monthCost) · \($0) tokens") }
+            ?? CLIL10n.tr("Last 30 days: \(monthCost)")
 
         return [header, todayLine, monthLine].joined(separator: "\n")
     }

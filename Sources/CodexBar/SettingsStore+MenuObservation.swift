@@ -4,6 +4,7 @@ extension SettingsStore {
     var menuObservationToken: Int {
         _ = self.providerOrder
         _ = self.providerEnablement
+        _ = self.appLanguage
         _ = self.refreshFrequency
         _ = self.launchAtLogin
         _ = self.debugMenuEnabled

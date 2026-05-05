@@ -15,6 +15,25 @@ struct GeneralPane: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .textCase(.uppercase)
+                    HStack(alignment: .top, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            LText("Language")
+                                .font(.body)
+                            LText("Choose the language used by menus, settings, widgets, and CLI text output.")
+                                .font(.footnote)
+                                .foregroundStyle(.tertiary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Spacer()
+                        Picker(L("Language"), selection: self.$settings.appLanguage) {
+                            ForEach(AppLanguagePreference.allCases) { option in
+                                LText(Self.languageLabel(for: option)).tag(option)
+                            }
+                        }
+                        .labelsHidden()
+                        .pickerStyle(.menu)
+                        .frame(maxWidth: 180)
+                    }
                     PreferenceToggleRow(
                         title: "Start at Login",
                         subtitle: "Automatically opens CodexBar when you start your Mac.",
@@ -161,5 +180,16 @@ struct GeneralPane: View {
         return LText("\(name): no data yet")
             .font(.footnote)
             .foregroundStyle(.tertiary)
+    }
+
+    private static func languageLabel(for preference: AppLanguagePreference) -> String {
+        switch preference {
+        case .system:
+            "Follow System"
+        case .english:
+            "English"
+        case .simplifiedChinese:
+            "Simplified Chinese"
+        }
     }
 }

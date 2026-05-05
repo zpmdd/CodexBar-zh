@@ -104,7 +104,7 @@ struct PlanUtilizationHistoryChartMenuView: View {
                         self.selectedPointID = nil
                     })) {
                         ForEach(visibleSeries) { series in
-                            Text(series.title).tag(series.id)
+                            LText(series.title).tag(series.id)
                         }
                     } label: {
                         EmptyView()
@@ -115,7 +115,7 @@ struct PlanUtilizationHistoryChartMenuView: View {
 
             if model.points.isEmpty {
                 ZStack {
-                    Text(Self.emptyStateText(title: effectiveSelectedSeries?.title))
+                    LText(Self.emptyStateText(title: effectiveSelectedSeries?.title))
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -156,7 +156,7 @@ struct PlanUtilizationHistoryChartMenuView: View {
                         }
                     }
 
-                Text(self.detailLine(model: model, windowMinutes: effectiveSelectedSeries?.history.windowMinutes ?? 0))
+                LText(self.detailLine(model: model, windowMinutes: effectiveSelectedSeries?.history.windowMinutes ?? 0))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)

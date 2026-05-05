@@ -152,8 +152,8 @@ struct CodexAccountsSectionView: View {
                         Spacer(minLength: 0)
                     }
 
-                        LText("Choose which Codex account CodexBar should follow.")
-                            .font(.footnote)
+                    LText("Choose which Codex account CodexBar should follow.")
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
 
                     self.systemRow(selection: self.systemSelectionBinding)

@@ -1,6 +1,9 @@
 import CodexBarCore
 import Foundation
 import ServiceManagement
+#if canImport(WidgetKit)
+import WidgetKit
+#endif
 
 extension SettingsStore {
     private static let mergedOverviewSelectionEditedActiveProvidersKey = "mergedOverviewSelectionEditedActiveProviders"
@@ -10,6 +13,23 @@ extension SettingsStore {
         set {
             self.defaultsState.refreshFrequency = newValue
             self.userDefaults.set(newValue.rawValue, forKey: "refreshFrequency")
+        }
+    }
+
+    var appLanguage: AppLanguagePreference {
+        get { AppLanguagePreference.fromStoredRawValue(self.defaultsState.appLanguageRaw) }
+        set {
+            self.defaultsState.appLanguageRaw = newValue.rawValue
+            self.userDefaults.set(newValue.rawValue, forKey: AppLanguagePreference.userDefaultsKey)
+            if Self.shouldBridgeSharedDefaults(for: self.userDefaults) {
+                Self.sharedDefaults?.set(newValue.rawValue, forKey: AppLanguagePreference.userDefaultsKey)
+            }
+            if !Self.isRunningTests {
+                AppLanguageRuntime.setInMemoryPreference(newValue)
+            }
+            #if canImport(WidgetKit)
+            WidgetCenter.shared.reloadAllTimelines()
+            #endif
         }
     }
 

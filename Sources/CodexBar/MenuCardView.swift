@@ -335,8 +335,8 @@ private struct ProviderCostContent: View {
                 tint: self.progressColor,
                 accessibilityLabel: L("Extra usage spent"))
             HStack(alignment: .firstTextBaseline) {
-                    LText(self.section.spendLine)
-                        .font(.footnote)
+                LText(self.section.spendLine)
+                    .font(.footnote)
                 Spacer()
                 LText(String(format: "%.0f%% used", min(100, max(0, self.section.percentUsed))))
                     .font(.footnote)

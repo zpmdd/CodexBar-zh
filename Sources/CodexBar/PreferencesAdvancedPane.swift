@@ -165,6 +165,7 @@ private struct LocalizedShortcutRecorder: NSViewRepresentable {
         }
 
         func stop() {
+            // swiftlint:disable:next notification_center_detachment
             NotificationCenter.default.removeObserver(self)
             self.isObserving = false
         }

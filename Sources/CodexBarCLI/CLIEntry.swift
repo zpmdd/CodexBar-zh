@@ -46,7 +46,7 @@ enum CodexBarCLI {
             default:
                 Self.exit(
                     code: .failure,
-                    message: "Unknown command",
+                    message: CLIL10n.tr("Unknown command"),
                     output: outputPreferences,
                     kind: .args)
             }
@@ -65,28 +65,28 @@ enum CodexBarCLI {
         return [
             CommandDescriptor(
                 name: "usage",
-                abstract: "Print usage as text or JSON",
+                abstract: CLIL10n.tr("Print usage as text or JSON"),
                 discussion: nil,
                 signature: usageSignature),
             CommandDescriptor(
                 name: "cost",
-                abstract: "Print local cost usage as text or JSON",
+                abstract: CLIL10n.tr("Print local cost usage as text or JSON"),
                 discussion: nil,
                 signature: costSignature),
             CommandDescriptor(
                 name: "config",
-                abstract: "Config utilities",
+                abstract: CLIL10n.tr("Config utilities"),
                 discussion: nil,
                 signature: CommandSignature(),
                 subcommands: [
                     CommandDescriptor(
                         name: "validate",
-                        abstract: "Validate config file",
+                        abstract: CLIL10n.tr("Validate config file"),
                         discussion: nil,
                         signature: configSignature),
                     CommandDescriptor(
                         name: "dump",
-                        abstract: "Print normalized config JSON",
+                        abstract: CLIL10n.tr("Print normalized config JSON"),
                         discussion: nil,
                         signature: configSignature),
                 ],

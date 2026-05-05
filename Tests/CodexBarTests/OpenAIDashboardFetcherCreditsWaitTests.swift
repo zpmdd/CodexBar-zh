@@ -184,6 +184,11 @@ struct OpenAIDashboardFetcherCreditsWaitTests {
     }
 
     @Test
+    func `preferred usage route uses stable settings page`() {
+        #expect(OpenAIDashboardFetcher.preferredUsageURL.absoluteString == "https://chatgpt.com/codex/settings/usage")
+    }
+
+    @Test
     func `usage route matcher accepts legacy settings route`() {
         #expect(OpenAIDashboardFetcher.isUsageRoute("https://chatgpt.com/codex/settings/usage"))
     }
@@ -231,6 +236,7 @@ struct OpenAIDashboardFetcherCreditsWaitTests {
         #expect(request.value(forHTTPHeaderField: "Cookie") == "a=b")
         #expect(request.value(forHTTPHeaderField: "Accept") == "application/json")
         #expect(request.value(forHTTPHeaderField: "Accept-Language") == "en-US,en;q=0.9")
+        #expect(request.value(forHTTPHeaderField: "User-Agent")?.contains("Chrome/") == true)
     }
 
     @Test
@@ -242,6 +248,7 @@ struct OpenAIDashboardFetcherCreditsWaitTests {
         #expect(request.value(forHTTPHeaderField: "Cookie") == "a=b")
         #expect(request.value(forHTTPHeaderField: "Accept") == "application/json")
         #expect(request.value(forHTTPHeaderField: "Accept-Language") == "en-US,en;q=0.9")
+        #expect(request.value(forHTTPHeaderField: "User-Agent")?.contains("Chrome/") == true)
     }
 
     @Test

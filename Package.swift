@@ -56,6 +56,9 @@ let package = Package(
                     .product(name: "Commander", package: "Commander"),
                 ],
                 path: "Sources/CodexBarCLI",
+                resources: [
+                    .process("Resources"),
+                ],
                 swiftSettings: [
                     .enableUpcomingFeature("StrictConcurrency"),
                 ]),
@@ -100,6 +103,9 @@ let package = Package(
                 name: "CodexBarWidget",
                 dependencies: ["CodexBarCore"],
                 path: "Sources/CodexBarWidget",
+                resources: [
+                    .process("Resources"),
+                ],
                 swiftSettings: [
                     .enableUpcomingFeature("StrictConcurrency"),
                 ]),

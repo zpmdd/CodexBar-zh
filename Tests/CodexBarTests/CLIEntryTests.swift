@@ -45,6 +45,17 @@ struct CLIEntryTests {
     }
 
     @Test
+    func `CLI help localizes descriptive text but keeps commands English`() {
+        let help = AppLanguageRuntime.withPreference(.simplifiedChinese) {
+            CodexBarCLI.usageHelp(version: "1.0")
+        }
+
+        #expect(help.contains("用法:"))
+        #expect(help.contains("codexbar usage"))
+        #expect(help.contains("JSON 字段保持英文"))
+    }
+
+    @Test
     func `CLI version falls back to containing app bundle`() throws {
         let root = FileManager.default.temporaryDirectory
             .appendingPathComponent("codexbar-cli-version-\(UUID().uuidString)", isDirectory: true)

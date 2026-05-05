@@ -149,6 +149,7 @@ generate_widget_appintents_metadata() {
   local const_values_list
   local dependency_metadata
   local static_dependency_metadata
+  local metadata_marker
   local appintents_tool
   local sdk_root
   local swiftc_path
@@ -175,17 +176,37 @@ generate_widget_appintents_metadata() {
   toolchain_dir=$(dirname "$(dirname "$(dirname "$swiftc_path")")")
   xcode_version=$(xcodebuild -version | awk '/Build version/ { print $3 }')
 
+  metadata_marker="$derived_dir/.metadata-build-started"
   rm -rf "$derived_dir"
+  mkdir -p "$derived_dir"
+  : > "$metadata_marker"
   xcodebuild \
     -workspace "$ROOT/.swiftpm/xcode/package.xcworkspace" \
     -scheme CodexBarWidget \
     -configuration "$xcode_conf" \
     -destination "platform=macOS,arch=${host_arch}" \
     -derivedDataPath "$derived_dir" \
+    OBJROOT="$derived_dir/Build/Intermediates.noindex" \
+    SYMROOT="$derived_dir/Build/Products" \
     build >/dev/null
 
   if [[ ! -f "$source_file_list" ]]; then
+    source_file_list=$(find "$derived_dir" "$ROOT/.." \
+      -newer "$metadata_marker" \
+      -path "*/CodexBar.build/${xcode_conf}/CodexBarWidget.build/Objects-normal/${host_arch}/CodexBarWidget.SwiftFileList" \
+      -print -quit 2>/dev/null || true)
+    if [[ -n "$source_file_list" ]]; then
+      object_dir=$(dirname "$source_file_list")
+      build_dir=$(cd "$object_dir/../.." && pwd)
+      const_values_list="$object_dir/CodexBarWidget.SwiftConstValuesFileList"
+      dependency_metadata="$build_dir/CodexBarWidget.DependencyMetadataFileList"
+      static_dependency_metadata="$build_dir/CodexBarWidget.DependencyStaticMetadataFileList"
+    fi
+  fi
+
+  if [[ ! -f "$source_file_list" ]]; then
     echo "ERROR: Missing App Intents metadata inputs for CodexBarWidget." >&2
+    echo "Expected: $derived_dir/Build/Intermediates.noindex/CodexBar.build/${xcode_conf}/CodexBarWidget.build" >&2
     exit 1
   fi
 

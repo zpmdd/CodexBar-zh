@@ -18,21 +18,44 @@ struct CLICostTests {
 
     @Test
     func `renders cost text snapshot`() {
-        let snap = CostUsageTokenSnapshot(
-            sessionTokens: 1200,
-            sessionCostUSD: 1.25,
-            last30DaysTokens: 9000,
-            last30DaysCostUSD: 9.99,
-            daily: [],
-            updatedAt: Date(timeIntervalSince1970: 0))
+        AppLanguageRuntime.withPreference(.english) {
+            let snap = CostUsageTokenSnapshot(
+                sessionTokens: 1200,
+                sessionCostUSD: 1.25,
+                last30DaysTokens: 9000,
+                last30DaysCostUSD: 9.99,
+                daily: [],
+                updatedAt: Date(timeIntervalSince1970: 0))
 
-        let output = CodexBarCLI.renderCostText(provider: .claude, snapshot: snap, useColor: false)
-            .replacingOccurrences(of: "\u{00A0}", with: " ")
-            .replacingOccurrences(of: "$ ", with: "$")
+            let output = CodexBarCLI.renderCostText(provider: .claude, snapshot: snap, useColor: false)
+                .replacingOccurrences(of: "\u{00A0}", with: " ")
+                .replacingOccurrences(of: "$ ", with: "$")
 
-        #expect(output.contains("Claude Cost (local)"))
-        #expect(output.contains("Today: $1.25 · 1.2K tokens"))
-        #expect(output.contains("Last 30 days: $9.99 · 9K tokens"))
+            #expect(output.contains("Claude Cost (local)"))
+            #expect(output.contains("Today: $1.25 · 1.2K tokens"))
+            #expect(output.contains("Last 30 days: $9.99 · 9K tokens"))
+        }
+    }
+
+    @Test
+    func `renders cost text in Chinese without changing JSON fields`() {
+        AppLanguageRuntime.withPreference(.simplifiedChinese) {
+            let snap = CostUsageTokenSnapshot(
+                sessionTokens: 1200,
+                sessionCostUSD: 1.25,
+                last30DaysTokens: 9000,
+                last30DaysCostUSD: 9.99,
+                daily: [],
+                updatedAt: Date(timeIntervalSince1970: 0))
+
+            let output = CodexBarCLI.renderCostText(provider: .claude, snapshot: snap, useColor: false)
+                .replacingOccurrences(of: "\u{00A0}", with: " ")
+                .replacingOccurrences(of: "$ ", with: "$")
+
+            #expect(output.contains("Claude 费用 (local)"))
+            #expect(output.contains("今日：$1.25 · 1.2K tokens"))
+            #expect(output.contains("近 30 天：$9.99 · 9K tokens"))
+        }
     }
 
     @Test

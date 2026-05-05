@@ -60,6 +60,25 @@ struct SettingsStoreCoverageTests {
     }
 
     @Test
+    func `app language preference persists and participates in menu observation`() throws {
+        let suite = "SettingsStoreCoverageTests-app-language"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defaults.removePersistentDomain(forName: suite)
+        let configStore = testConfigStore(suiteName: suite)
+
+        let first = Self.makeSettingsStore(userDefaults: defaults, configStore: configStore)
+        _ = first.menuObservationToken
+        first.appLanguage = .simplifiedChinese
+
+        #expect(defaults.string(forKey: AppLanguagePreference.userDefaultsKey) == "simplifiedChinese")
+        #expect(first.appLanguage == .simplifiedChinese)
+
+        let second = Self.makeSettingsStore(userDefaults: defaults, configStore: configStore)
+        #expect(second.appLanguage == .simplifiedChinese)
+        _ = second.menuObservationToken
+    }
+
+    @Test
     func `token account mutations apply side effects`() {
         let settings = Self.makeSettingsStore()
 

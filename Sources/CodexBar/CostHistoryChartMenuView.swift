@@ -110,7 +110,7 @@ struct CostHistoryChartMenuView: View {
 
                 let detail = self.detailContent(model: model)
                 VStack(alignment: .leading, spacing: Self.detailSpacing) {
-                    Text(detail.primary)
+                    LText(detail.primary)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)

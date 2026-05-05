@@ -1,9 +1,70 @@
+import CodexBarCore
 import Foundation
 import SwiftUI
 
+private struct XCStringCatalog: Decodable, Sendable {
+    struct Entry: Decodable, Sendable {
+        struct Localization: Decodable, Sendable {
+            struct StringUnit: Decodable, Sendable {
+                let value: String
+            }
+
+            let stringUnit: StringUnit?
+        }
+
+        let localizations: [String: Localization]?
+    }
+
+    let strings: [String: Entry]
+}
+
+private final class CodexBarStringCatalog: @unchecked Sendable {
+    static let shared = CodexBarStringCatalog(bundle: .module)
+
+    private let catalog: XCStringCatalog?
+    private let bundle: Bundle
+
+    init(bundle: Bundle) {
+        self.bundle = bundle
+        guard let url = bundle.url(forResource: "Localizable", withExtension: "xcstrings"),
+              let data = try? Data(contentsOf: url)
+        else {
+            self.catalog = nil
+            return
+        }
+        self.catalog = try? JSONDecoder().decode(XCStringCatalog.self, from: data)
+    }
+
+    func localized(_ key: String, languageIdentifier: String) -> String? {
+        guard languageIdentifier != "en" else { return key }
+
+        let localized = String(
+            localized: String.LocalizationValue(key),
+            table: "Localizable",
+            bundle: self.bundle,
+            locale: Locale(identifier: languageIdentifier))
+        if localized != key {
+            return localized
+        }
+
+        guard let catalog,
+              let value = catalog.strings[key]?.localizations?[languageIdentifier]?.stringUnit?.value
+        else {
+            return nil
+        }
+        return value
+    }
+}
+
 enum CodexBarL10n {
     static func tr(_ rawText: String) -> String {
-        guard self.isChineseEnabled else { return rawText }
+        let preference = AppLanguageRuntime.resolvedPreference()
+        let languageIdentifier = preference.resolvedLocalizationIdentifier()
+        guard languageIdentifier != "en" else { return rawText }
+
+        if let localized = CodexBarStringCatalog.shared.localized(rawText, languageIdentifier: languageIdentifier) {
+            return localized
+        }
 
         if let exact = self.exactTranslations[rawText] {
             return exact
@@ -12,13 +73,7 @@ enum CodexBarL10n {
         return self.dynamicTranslation(rawText)
     }
 
-    private static var isChineseEnabled: Bool {
-        let value = ProcessInfo.processInfo.environment["CODEXBAR_LANG"]?
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .lowercased()
-        return value != "en" && value != "english"
-    }
-
+    // swiftlint:disable:next cyclomatic_complexity function_body_length
     private static func dynamicTranslation(_ text: String) -> String {
         if text.hasPrefix("Account: ") {
             return text.replacingOccurrences(of: "Account: ", with: "账户：")
@@ -38,27 +93,27 @@ enum CodexBarL10n {
         if text.hasPrefix("Last spend: ") {
             return text.replacingOccurrences(of: "Last spend: ", with: "最近花费：")
         }
-        if text.hasPrefix("Last ") && text.hasSuffix(" fetch failed:") {
+        if text.hasPrefix("Last "), text.hasSuffix(" fetch failed:") {
             let provider = text
                 .replacingOccurrences(of: "Last ", with: "")
                 .replacingOccurrences(of: " fetch failed:", with: "")
             return "最近一次 \(provider) 拉取失败："
         }
-        if text.hasPrefix("Write logs to ") && text.hasSuffix(" for debugging.") {
+        if text.hasPrefix("Write logs to "), text.hasSuffix(" for debugging.") {
             let path = text
                 .replacingOccurrences(of: "Write logs to ", with: "")
                 .replacingOccurrences(of: " for debugging.", with: "")
             return "将日志写入 \(path) 以便调试。"
         }
-        if text.hasPrefix("CodexBar found multiple workspaces for ") &&
-            text.hasSuffix(". Choose the one to add.")
+        if text.hasPrefix("CodexBar found multiple workspaces for "),
+           text.hasSuffix(". Choose the one to add.")
         {
             let email = text
                 .replacingOccurrences(of: "CodexBar found multiple workspaces for ", with: "")
                 .replacingOccurrences(of: ". Choose the one to add.", with: "")
             return "CodexBar 为 \(email) 找到多个工作区。请选择要添加的工作区。"
         }
-        if text.hasPrefix("Remove ") && text.hasSuffix(" from CodexBar? Its managed Codex home will be deleted.") {
+        if text.hasPrefix("Remove "), text.hasSuffix(" from CodexBar? Its managed Codex home will be deleted.") {
             let account = text
                 .replacingOccurrences(of: "Remove ", with: "")
                 .replacingOccurrences(of: " from CodexBar? Its managed Codex home will be deleted.", with: "")
@@ -126,22 +181,22 @@ enum CodexBarL10n {
         if text.hasPrefix("Built ") {
             return text.replacingOccurrences(of: "Built ", with: "构建于 ")
         }
-        if text.hasPrefix("Primary (") && text.hasSuffix(")") {
+        if text.hasPrefix("Primary ("), text.hasSuffix(")") {
             return text
                 .replacingOccurrences(of: "Primary (", with: "主要（")
                 .replacingOccurrences(of: ")", with: "）")
         }
-        if text.hasPrefix("Secondary (") && text.hasSuffix(")") {
+        if text.hasPrefix("Secondary ("), text.hasSuffix(")") {
             return text
                 .replacingOccurrences(of: "Secondary (", with: "次要（")
                 .replacingOccurrences(of: ")", with: "）")
         }
-        if text.hasPrefix("Tertiary (") && text.hasSuffix(")") {
+        if text.hasPrefix("Tertiary ("), text.hasSuffix(")") {
             return text
                 .replacingOccurrences(of: "Tertiary (", with: "第三项（")
                 .replacingOccurrences(of: ")", with: "）")
         }
-        if text.hasPrefix("Average (") && text.hasSuffix(")") {
+        if text.hasPrefix("Average ("), text.hasSuffix(")") {
             return text
                 .replacingOccurrences(of: "Average (", with: "平均（")
                 .replacingOccurrences(of: ")", with: "）")
@@ -187,6 +242,9 @@ enum CodexBarL10n {
             let stem = String(text.dropLast(" left".count))
             return "剩余 \(stem)"
         }
+        if let planUtilizationDetail = self.translatePlanUtilizationDetailLine(text) {
+            return planUtilizationDetail
+        }
         if text.hasSuffix(" used") {
             let stem = String(text.dropLast(" used".count))
             return "已用 \(stem)"
@@ -206,7 +264,7 @@ enum CodexBarL10n {
         if text == "Runs out now" {
             return "现在耗尽"
         }
-        if text.hasPrefix("≈ ") && text.hasSuffix("% run-out risk") {
+        if text.hasPrefix("≈ "), text.hasSuffix("% run-out risk") {
             let stem = String(text.dropFirst("≈ ".count).dropLast("% run-out risk".count))
             return "约 \(stem)% 耗尽风险"
         }
@@ -227,7 +285,7 @@ enum CodexBarL10n {
                 .replacingOccurrences(of: " regen", with: " 次恢复后满额")
                 .replacingOccurrences(of: " regens", with: " 次恢复后满额")
         }
-        if text.hasPrefix("Choose up to ") && text.hasSuffix(" providers") {
+        if text.hasPrefix("Choose up to "), text.hasSuffix(" providers") {
             let number = text
                 .replacingOccurrences(of: "Choose up to ", with: "")
                 .replacingOccurrences(of: " providers", with: "")
@@ -235,6 +293,78 @@ enum CodexBarL10n {
         }
 
         return text
+    }
+
+    private static func translatePlanUtilizationDetailLine(_ text: String) -> String? {
+        guard text.hasSuffix(" used"),
+              let separator = text.range(of: ": ", options: .backwards)
+        else {
+            return nil
+        }
+
+        let datePart = String(text[..<separator.lowerBound])
+        let usagePart = String(text[separator.upperBound...].dropLast(" used".count))
+        guard usagePart.hasSuffix("%"),
+              let localizedDate = self.localizedPlanUtilizationDateLabel(datePart)
+        else {
+            return nil
+        }
+
+        return "\(localizedDate)：已用 \(usagePart)"
+    }
+
+    private static func localizedPlanUtilizationDateLabel(_ rawDate: String) -> String? {
+        if rawDate.range(
+            of: #"^\d{1,2}月\d{1,2}日 \d{1,2}:\d{2}$"#,
+            options: .regularExpression) != nil
+        {
+            return rawDate
+        }
+
+        let monthNumbers = [
+            "Jan": 1,
+            "Feb": 2,
+            "Mar": 3,
+            "Apr": 4,
+            "May": 5,
+            "Jun": 6,
+            "Jul": 7,
+            "Aug": 8,
+            "Sep": 9,
+            "Oct": 10,
+            "Nov": 11,
+            "Dec": 12,
+        ]
+        let parts = rawDate.split(separator: " ")
+        guard parts.count == 4,
+              let month = monthNumbers[String(parts[0])]
+        else {
+            return nil
+        }
+
+        let day = String(parts[1]).trimmingCharacters(in: CharacterSet(charactersIn: ","))
+        let timeParts = parts[2].split(separator: ":")
+        guard !day.isEmpty,
+              day.allSatisfy(\.isNumber),
+              timeParts.count == 2,
+              let rawHour = Int(timeParts[0]),
+              rawHour >= 1,
+              rawHour <= 12
+        else {
+            return nil
+        }
+
+        var hour = rawHour
+        switch parts[3].lowercased() {
+        case "am":
+            if hour == 12 { hour = 0 }
+        case "pm":
+            if hour < 12 { hour += 12 }
+        default:
+            return nil
+        }
+
+        return "\(month)月\(day)日 \(hour):\(timeParts[1])"
     }
 
     private static func translateTimePhrase(_ text: String) -> String {
@@ -250,6 +380,7 @@ enum CodexBarL10n {
         return output
     }
 
+    // swiftlint:disable line_length
     private static let exactTranslations: [String: String] = [
         "About": "关于",
         "About CodexBar": "关于 CodexBar",
@@ -601,6 +732,7 @@ enum CodexBarL10n {
         "record_shortcut": "设置快捷键",
         "usage not fetched yet": "尚未拉取用量",
     ]
+    // swiftlint:enable line_length
 }
 
 func L(_ text: String) -> String {

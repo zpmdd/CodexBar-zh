@@ -8,6 +8,44 @@ import Testing
 @MainActor
 struct CodexDashboardWorkedExampleParityTests {
     @Test
+    func `dashboard cache store is isolated while tests run`() throws {
+        let cacheURL = try #require(OpenAIDashboardCacheStore._cacheURLForTesting)
+
+        #expect(cacheURL.path.contains("CodexBarTests"))
+        #expect(!cacheURL.path.contains("/Application Support/com.steipete.codexbar/openai-dashboard.json"))
+    }
+
+    @Test
+    func `app restores authorized cached dashboard before live web refresh`() {
+        OpenAIDashboardCacheStore.clear()
+        defer { OpenAIDashboardCacheStore.clear() }
+
+        let store = self.makeAppStore(suite: "CodexDashboardWorkedExampleParityTests-cache-restore")
+        store.settings._test_liveSystemCodexAccount = self.liveAccount(
+            email: "work@company.com",
+            identity: .emailOnly(normalizedEmail: "work@company.com"))
+        store.settings.codexActiveSource = .liveSystem
+        store.settings.codexCookieSource = .auto
+        store._setSnapshotForTesting(self.codexSnapshot(email: "work@company.com", usedPercent: 14), provider: .codex)
+        store.lastSourceLabels[.codex] = "codex-cli"
+
+        let cachedDashboard = self.makeDashboard(
+            email: "work@company.com",
+            creditsRemaining: 42,
+            usedPercent: 14,
+            includeUsageBreakdown: true)
+        OpenAIDashboardCacheStore.save(OpenAIDashboardCache(
+            accountEmail: "work@company.com",
+            snapshot: cachedDashboard))
+
+        #expect(store.restoreOpenAIDashboardCacheIfAvailable())
+        #expect(store.openAIDashboard == cachedDashboard)
+        #expect(store.openAIDashboardAttachmentAuthorized == true)
+        #expect(store.openAIDashboardRequiresLogin == false)
+        #expect(store.openAIDashboard?.usageBreakdown.isEmpty == false)
+    }
+
+    @Test
     func `worked example A wrong email app and CLI both reject and retire owned state`() async throws {
         OpenAIDashboardCacheStore.clear()
         defer { OpenAIDashboardCacheStore.clear() }

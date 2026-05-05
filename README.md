@@ -1,4 +1,4 @@
-# CodexBar 中文版
+# CodexBar 简体中文本地化
 
 <p align="center">
   <a href="https://github.com/steipete/CodexBar">上游项目</a>
@@ -7,23 +7,23 @@
   ·
   <a href="#界面预览">界面预览</a>
   ·
-  <a href="#普通用户无需-xcode">无需 Xcode</a>
+  <a href="#语言切换">语言切换</a>
   ·
-  <a href="#更新策略">更新策略</a>
+  <a href="#codex-openai-web-额外数据">Codex OpenAI Web</a>
   ·
-  <a href="#开发与验证">开发与验证</a>
+  <a href="#上游同步">上游同步</a>
 </p>
 
 <p align="center">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-blue">
   <img alt="Platform" src="https://img.shields.io/badge/macOS-14%2B-black">
   <img alt="Swift" src="https://img.shields.io/badge/Swift-6-orange">
-  <img alt="Status" src="https://img.shields.io/badge/localization-zh--Hans-success">
+  <img alt="Localization" src="https://img.shields.io/badge/localization-en%20%7C%20zh--Hans-success">
 </p>
 
-CodexBar 中文版是 [CodexBar](https://github.com/steipete/CodexBar) 的非官方中文本地化构建。它保留原项目的多服务用量监控能力，并把菜单栏、设置页、提示弹窗、调试入口和常见状态文案整理为中文。
+本仓库基于 [CodexBar](https://github.com/steipete/CodexBar) 做简体中文本地化。二版不再把应用做成 `CodexBar 中文.app`，而是保持原应用名称 `CodexBar`，通过原生本地化资源和设置内语言切换提供 English / 简体中文 / 跟随系统。
 
-本仓库的核心目标不是替换官方版本，而是提供一个可审计、可更新、不会破坏官方更新链的中文版本。
+核心目标是减少上游同步成本：新增或变更的英文文案如果还没有中文翻译，会安全显示英文原文，不会出现空白、异常 key 或阻塞应用启动。
 
 ## 界面预览
 
@@ -37,199 +37,128 @@ CodexBar 中文版是 [CodexBar](https://github.com/steipete/CodexBar) 的非官
 | --- | --- |
 | <img src="docs/screenshots/zh-advanced.png" alt="CodexBar 中文高级设置" width="430"> | <img src="docs/screenshots/zh-about.png" alt="CodexBar 中文关于页面" width="430"> |
 
-## 适合谁
-
-- 希望在 macOS 菜单栏直接查看 Codex、Claude、Cursor、Gemini、Copilot 等服务用量的用户。
-- 希望 CodexBar 界面中文化，但不想直接修改 `/Applications/CodexBar.app` 的用户。
-- 希望保留官方 Homebrew/Sparkle 更新能力，同时单独维护中文构建的用户。
-
 ## 主要特性
 
-- 中文化菜单栏入口：设置、刷新、关于、退出、用量看板、状态页等。
-- 中文化设置界面：通用、服务、显示、高级、关于、调试页。
-- 中文化用量状态：账户、套餐、配额、积分、重置时间、刷新状态、错误摘要。
-- 中文化常见弹窗：登录、移除账户、钥匙串提示、Copilot 设备流、Vertex AI 引导。
-- 费用人民币估算：在美元费用和 tokens 前增加 `¥` 估算值，方便中文用户快速判断消耗。
-- 普通用户免编译安装：直接下载 GitHub Release 里的预构建 `.app`，无需安装 Xcode。
-- 独立安装：安装为 `/Applications/CodexBar 中文.app`，不覆盖官方 `/Applications/CodexBar.app`。
-- 可回退英文：启动时设置 `CODEXBAR_LANG=en` 可临时使用英文文案。
+- 应用名称保持 `CodexBar`，不再使用 `CodexBar 中文`。
+- 设置页增加语言选择：`跟随系统`、`English`、`简体中文`。
+- App 主菜单、设置页、弹窗、图表、Widget、CLI 文本输出接入本地化。
+- CLI 命令名、参数名、JSON 字段保持英文，避免破坏脚本和机器读取。
+- 费用区块继续显示人民币估算：`¥金额 · $金额 · tokens`。
+- Codex 的 OpenAI Web 额外数据使用 Chrome 优先的 cookie 导入策略，降低 Safari cookie 可识别账号但隐藏 WebView 无法加载 Dashboard 的概率。
+- 中文缺失时自动回退英文原文，方便同步上游版本。
 
 ## 安装
 
-### 普通用户无需 Xcode
-
-推荐使用预构建版本。普通使用者只需要 macOS 14+，不需要安装 Xcode，不需要拉源码，不需要本机编译。
+普通用户无需安装 Xcode，可以直接安装 GitHub Release 中的预构建包：
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/zpmdd/CodexBar-zh/main/Scripts/install_latest_zh.sh)"
 ```
 
-这个脚本会从 [GitHub Releases](https://github.com/zpmdd/CodexBar-zh/releases/latest) 下载最新的中文预构建包，解压后安装到 `/Applications/CodexBar 中文.app`，并启动应用。
+脚本会下载最新发布包，安装为：
 
-也可以手动安装：
-
-1. 打开 [最新 Release](https://github.com/zpmdd/CodexBar-zh/releases/latest)。
-2. 下载 `CodexBar-zh-macos-universal.zip`。
-3. 解压后把 `CodexBar 中文.app` 拖到 `/Applications`。
-4. 首次启动如果 macOS 提示来源限制，在“系统设置 → 隐私与安全性”中允许打开。
-
-说明：当前中文预构建包使用本地 adhoc 签名，不是 Apple Developer ID 公证包。安装脚本会清理下载隔离属性，减少首次打开阻拦；后续如果项目接入正式 Developer ID 签名，可以移除这一步。
-
-### 开发者从源码安装
-
-只有维护者、开发者、需要自行审计源码的人，才需要本机构建。
-
-环境要求：
-
-- macOS 14+
-- 完整 Xcode，建议安装到 `/Applications/Xcode.app`
-- Git
-
-```bash
-git clone https://github.com/zpmdd/CodexBar-zh.git
-cd CodexBar-zh
-./Scripts/install_zh_app.sh
+```text
+/Applications/CodexBar.app
 ```
 
-脚本会执行以下动作：
+也可以手动下载 `CodexBar-zh-macos-universal.zip`，解压后把 `CodexBar.app` 拖到 `/Applications`。
 
-- 使用本机 Xcode 构建 CodexBar
-- 以 adhoc 方式签名本地中文构建
-- 安装到 `/Applications/CodexBar 中文.app`
-- 验证代码签名
-- 启动中文版本
+说明：adhoc 预构建包不是 Apple Developer ID 公证包。安装脚本会清理下载隔离属性，减少首次打开阻拦；如果后续接入正式签名和公证，可以移除这一步。
 
-生成可发布的中文预构建包：
+## 语言切换
+
+打开 `设置 -> 通用 -> 语言`，选择：
+
+- `跟随系统`：按 macOS 首选语言显示，暂时只区分英文和简体中文。
+- `English`：强制英文。
+- `简体中文`：强制简体中文。
+
+语言切换后，菜单、设置页、弹窗、图表和 Widget 时间线会刷新。系统控制的 Widget Gallery 和 AppIntent 元数据可能需要重新打开系统界面后才显示新语言。
+
+临时调试也可以使用环境变量覆盖：
+
+```bash
+CODEXBAR_LANG=en ./CodexBar.app/Contents/MacOS/CodexBar
+CODEXBAR_LANG=zh-Hans ./CodexBar.app/Contents/MacOS/CodexBar
+```
+
+## 开发与验证
+
+主要本地化入口：
+
+- `Sources/CodexBar/Resources/Localizable.xcstrings`
+- `Sources/CodexBarWidget/Resources/Localizable.xcstrings`
+- `Sources/CodexBarCLI/Resources/Localizable.xcstrings`
+- `Sources/CodexBar/CodexBarLocalization.swift`
+- `Sources/CodexBarCore/AppLanguagePreference.swift`
+
+常用命令：
+
+```bash
+swift test --filter CodexBarLocalizationTests
+swift test --filter AppLanguagePreferenceTests
+swift test --filter CodexBarWidgetProviderTests
+swift test --filter CLICostTests
+./Scripts/compile_and_run.sh
+```
+
+本地安装调试：
+
+```bash
+./Scripts/install_zh_app.sh
+codesign --verify --deep --strict "/Applications/CodexBar.app"
+```
+
+生成预构建包：
 
 ```bash
 ./Scripts/package_zh_release.sh
 ```
 
-产物会放到 `dist/`，默认生成 `CodexBar-zh-macos-universal.zip` 和对应 SHA-256 校验文件，供 GitHub Release 上传使用。
+产物位于 `dist/`，默认生成 `CodexBar-zh-macos-universal.zip` 和 SHA-256 校验文件。
 
-## 更新策略
+## Codex OpenAI Web 额外数据
 
-本项目刻意采用独立 App 策略：
+`服务 -> Codex -> OpenAI Web 额外数据` 用于显示 Codex 官方 Dashboard 上的附加信息，例如会话/每周用量明细、积分历史、购买积分入口和右侧柱状图。
 
-- 官方版本仍位于 `/Applications/CodexBar.app`
-- 中文版本位于 `/Applications/CodexBar 中文.app`
-- 官方 Homebrew 更新仍然只影响官方 App
-- 中文版本不会开启官方 Sparkle 更新源，避免自动更新覆盖汉化改动
+实现细节：
 
-如果你通过 Homebrew 安装官方版本，仍可正常更新：
+- 自动 cookie 导入优先读取 Chrome，然后回退 Safari、Firefox 和其他浏览器。
+- 隐藏 WebView 和 OpenAI Dashboard API 使用浏览器型 Chrome User-Agent，避免浏览器 cookie 与请求指纹不一致。
+- cookie 缓存在本机 Keychain 中，服务名为 `com.steipete.codexbar.cache`，不会进入仓库或截图。
+- 第一次读取 Chrome cookie 时，macOS 可能要求允许访问 `Chrome Safe Storage`。允许后通常不会反复弹出；如果拒绝，OpenAI Web 额外数据可能只能回退到 Safari 或手动 Cookie。
 
-```bash
-brew upgrade --cask codexbar
-```
+常见问题：
 
-更新中文版本：
+- “积分”提示 Dashboard 空页面，或鼠标悬停“会话”没有右侧柱状图：先确认 Chrome 能打开 `https://chatgpt.com/codex/settings/usage`，然后在 `服务 -> Codex` 点一次刷新/更新 OpenAI cookies。
+- 如果 Safari 能打开页面但 App 仍没有图表，优先在 Chrome 登录同一个 ChatGPT/Codex 账号，并允许 CodexBar 访问 Chrome 钥匙串。
+- “重新认证”弹出 `missing field command in mcp_servers.figma`：这是本机 `~/.codex/config.toml` 里存在 Codex CLI 不支持的 URL-only MCP 配置。删除或改正该 `[mcp_servers.figma]` 块后再重试。
+- 如果 Codex CLI 提示 `unknown variant xhigh`，把 `~/.codex/config.toml` 中的 `model_reasoning_effort` 改为当前 CLI 支持的 `high`。
 
-```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/zpmdd/CodexBar-zh/main/Scripts/install_latest_zh.sh)"
-```
+## 上游同步
 
-如果你是从源码安装的开发者版本，也可以继续使用 `git pull --rebase` 后重新运行 `./Scripts/install_zh_app.sh`。
-
-跟进上游改动时，建议保留上游远端：
+推荐同步流程：
 
 ```bash
-git remote -v
 git fetch upstream
 git rebase upstream/main
-./Scripts/install_zh_app.sh
+swift test
+./Scripts/compile_and_run.sh
 ```
 
-## 与官方版本的关系
+处理原则：
 
-这是非官方中文本地化版本。
-
-- 上游项目：<https://github.com/steipete/CodexBar>
-- 上游作者：Peter Steinberger
-- 上游许可证：MIT
-- 本仓库保留原版权和许可证声明
-- 本仓库的中文本地化改动同样按 MIT 许可证发布
-
-如果你只需要官方英文版，请优先使用官方发布渠道：
-
-```bash
-brew install --cask steipete/tap/codexbar
-```
+- 不把中文文案散落在业务逻辑里，新增文案优先进入 `Localizable.xcstrings`。
+- 上游新增文案暂时没有中文时，保留英文原文。
+- 动态文案只在稳定模式处做格式化翻译，例如用量百分比、重置时间、状态描述。
+- 不改变原始 USD 成本、排序、统计和 JSON 字段，人民币只作为显示估算。
 
 ## 隐私与权限
 
-CodexBar 的数据来源策略继承自上游项目：默认读取本机已知位置的 CLI 状态、日志、浏览器 cookie 或 Keychain token。相关能力通常是按服务开启，而不是全盘扫描。
+CodexBar 的数据来源策略继承自上游项目：读取本机 CLI 状态、日志、浏览器 cookie 或 Keychain token。相关能力按服务开启。
 
-常见权限包括：
-
-- Keychain：读取浏览器安全存储、Claude OAuth、Copilot token、z.ai token 等。
-- Full Disk Access：仅在读取 Safari 等受保护位置 cookie 时可能需要。
-- 文件夹访问：当被调用的 CLI 访问项目目录或外部磁盘时，macOS 可能弹出授权。
-
-除费用区块的人民币估算会按需访问 Frankfurter 免费汇率接口获取 USD/CNY 汇率外，本中文构建不会额外增加联网、遥测或后台采集逻辑。汇率缓存只保存汇率、汇率日期和抓取时间，不包含账号信息；网络失败时会继续使用上次缓存，首次获取失败则回退为美元原格式。
-
-## 开发与验证
-
-汉化入口集中在：
-
-- `Sources/CodexBar/CodexBarLocalization.swift`
-
-安装脚本：
-
-- `Scripts/install_zh_app.sh`
-- `Scripts/install_latest_zh.sh`
-- `Scripts/package_zh_release.sh`
-
-打包脚本仍沿用上游流程，并增加了本地构建需要的参数：
-
-- `CODEXBAR_APP_NAME`
-- `CODEXBAR_BUNDLE_ID`
-- `CODEXBAR_FEED_URL`
-- `CODEXBAR_AUTO_CHECKS`
-- `CODEXBAR_SKIP_WIDGET`
-- `CODEXBAR_SIGNING=adhoc`
-
-常用验证命令：
-
-```bash
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test --filter CodexBarLocalizationTests
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test --filter ExchangeRateTests
-./Scripts/install_zh_app.sh
-codesign --verify --deep --strict "/Applications/CodexBar 中文.app"
-```
-
-## 本地化范围
-
-已覆盖：
-
-- 菜单栏主菜单
-- 设置页主要表单
-- 服务配置页
-- 用量卡片
-- 图表空状态
-- 调试页常用操作
-- 账户管理
-- Copilot 与 Vertex AI 登录提示
-- 常见错误和动态状态文案
-
-仍建议持续补充：
-
-- 少数服务说明文案
-- 上游新增服务的文案
-- 新增设置项的中文测试用例
-
-## 贡献
-
-欢迎提交中文文案修正、漏翻补丁和上游同步修复。建议 PR 包含：
-
-- 变更说明
-- 涉及页面或入口
-- 运行过的验证命令
-- 如有 UI 改动，附截图
-
-## 致谢
-
-感谢 [Peter Steinberger](https://github.com/steipete) 和上游 [CodexBar](https://github.com/steipete/CodexBar) 项目。这个中文版本基于上游 MIT 授权代码构建，并保留原项目版权声明。
+除费用区块按需访问 Frankfurter 免费汇率接口获取 USD/CNY 汇率外，本地化不会额外增加联网、遥测或后台采集逻辑。汇率缓存只保存汇率、汇率日期和抓取时间，不包含账号信息。
 
 ## 许可证
 
-MIT。详见 [LICENSE](LICENSE) 与 [NOTICE.md](NOTICE.md)。
+MIT。详见 [LICENSE](LICENSE)、[NOTICE.md](NOTICE.md) 和 [docs/LEGAL.zh.md](docs/LEGAL.zh.md)。

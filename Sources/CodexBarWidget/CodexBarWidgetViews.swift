@@ -165,7 +165,7 @@ private struct CompactMetricView: View {
                 Text(display.value)
                     .font(.title2)
                     .fontWeight(.semibold)
-                Text(display.label)
+                WidgetL10n.text(display.label)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                 if let detail = display.detail {
@@ -532,7 +532,7 @@ private struct UsageBarRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text(self.title)
+                WidgetL10n.text(self.title)
                     .font(.caption)
                 Spacer()
                 Text(WidgetFormat.percent(self.percentLeft))
@@ -557,7 +557,7 @@ private struct ValueLine: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Text(self.title)
+            WidgetL10n.text(self.title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Text(self.value)

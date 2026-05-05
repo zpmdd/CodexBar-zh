@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
-APP_NAME="CodexBar 中文"
+APP_NAME="CodexBar"
 DEST="/Applications/${APP_NAME}.app"
 
 if [[ -z "${DEVELOPER_DIR:-}" && -d "/Applications/Xcode.app/Contents/Developer" ]]; then
@@ -11,7 +11,6 @@ fi
 
 cd "$ROOT"
 
-CODEXBAR_APP_NAME="$APP_NAME" \
 CODEXBAR_SIGNING=adhoc \
 CODEXBAR_SKIP_WIDGET=1 \
   ./Scripts/package_app.sh debug

@@ -266,6 +266,10 @@ extension CodexWebDashboardStrategy {
         let effectiveEmail = routingTargetEmail ?? importResult.signedInEmail?
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
+        // Cookie import probes the same usage route to validate the browser session. If that probe returns before
+        // the app fully hydrates, the cached WebView can be left on a route that later stalls during the real scrape.
+        // Start the dashboard scrape with a fresh WebView while keeping the verified persistent cookie store.
+        OpenAIDashboardFetcher.evictCachedWebView(accountEmail: effectiveEmail)
         let dashboard = try await OpenAIDashboardFetcher().loadLatestDashboard(
             accountEmail: effectiveEmail,
             logger: logger,

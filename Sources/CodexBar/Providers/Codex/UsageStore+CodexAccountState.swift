@@ -250,6 +250,29 @@ extension UsageStore {
                     self.lastKnownLiveSystemCodexEmail)))
     }
 
+    func makeCachedCodexDashboardAuthorityInput(
+        dashboard: OpenAIDashboardSnapshot,
+        cachedAccountEmail: String,
+        usage: UsageSnapshot,
+        sourceLabel: String) -> CodexDashboardAuthorityInput
+    {
+        let source = self.settings.codexResolvedActiveSource
+        let trustedCurrentUsageEmail = Self.shouldTrustCachedDashboardUsageEmail(sourceLabel: sourceLabel)
+            ? usage.accountEmail(for: .codex)
+            : nil
+        return CodexDashboardAuthorityInput(
+            sourceKind: .cachedDashboard,
+            proof: CodexDashboardOwnershipProofContext(
+                currentIdentity: self.currentCodexOpenAIWebIdentity(source: source),
+                expectedScopedEmail: self.currentCodexDashboardExpectedScopedEmail(),
+                trustedCurrentUsageEmail: trustedCurrentUsageEmail,
+                dashboardSignedInEmail: dashboard.signedInEmail,
+                knownOwners: self.codexDashboardKnownOwnerCandidates()),
+            routing: CodexDashboardRoutingHints(
+                targetEmail: CodexIdentityResolver.normalizeEmail(self.codexAccountEmailForOpenAIDashboard()),
+                lastKnownDashboardRoutingEmail: CodexIdentityResolver.normalizeEmail(cachedAccountEmail)))
+    }
+
     func evaluateCodexDashboardAuthority(
         dashboard: OpenAIDashboardSnapshot,
         sourceKind: CodexDashboardSourceKind,

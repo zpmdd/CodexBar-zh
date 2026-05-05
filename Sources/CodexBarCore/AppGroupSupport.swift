@@ -13,6 +13,7 @@ public enum AppGroupSupport {
     public static let migrationVersionKey = "appGroupMigrationVersion"
     private static let sharedDefaultsMigrationKeys = [
         "debugDisableKeychainAccess",
+        AppLanguagePreference.userDefaultsKey,
         "widgetSelectedProvider",
     ]
 

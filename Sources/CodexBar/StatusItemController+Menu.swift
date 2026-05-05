@@ -1022,6 +1022,7 @@ extension StatusItemController {
         {
             view
         }
+        .environment(\.locale, self.settings.appLanguage.effectiveLocale())
         let hosting = MenuCardItemHostingView(rootView: wrapped, highlightState: highlightState, onClick: onClick)
         // Set frame with target width immediately
         let height = self.menuCardHeight(for: hosting, width: width)
@@ -1212,7 +1213,10 @@ extension StatusItemController {
     }
 
     private func makeBuyCreditsItem() -> NSMenuItem {
-        let item = NSMenuItem(title: L("Buy Credits..."), action: #selector(self.openCreditsPurchase), keyEquivalent: "")
+        let item = NSMenuItem(
+            title: L("Buy Credits..."),
+            action: #selector(self.openCreditsPurchase),
+            keyEquivalent: "")
         item.target = self
         if let image = NSImage(systemSymbolName: "plus.circle", accessibilityDescription: nil) {
             image.isTemplate = true

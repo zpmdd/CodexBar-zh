@@ -197,6 +197,10 @@ public struct OpenAIDashboardCache: Codable, Equatable, Sendable {
 }
 
 public enum OpenAIDashboardCacheStore {
+    public static var _cacheURLForTesting: URL? {
+        self.cacheURL
+    }
+
     public static func load() -> OpenAIDashboardCache? {
         guard let url = self.cacheURL else { return nil }
         guard let data = try? Data(contentsOf: url) else { return nil }
@@ -226,10 +230,33 @@ public enum OpenAIDashboardCacheStore {
     }
 
     private static var cacheURL: URL? {
+        if self.isRunningTests {
+            guard let root = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else {
+                return nil
+            }
+            return root
+                .appendingPathComponent("CodexBarTests", isDirectory: true)
+                .appendingPathComponent("openai-dashboard-\(ProcessInfo.processInfo.processIdentifier).json")
+        }
+
         guard let root = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return nil
         }
         let dir = root.appendingPathComponent("com.steipete.codexbar", isDirectory: true)
         return dir.appendingPathComponent("openai-dashboard.json")
+    }
+
+    private static var isRunningTests: Bool {
+        let environment = ProcessInfo.processInfo.environment
+        if environment["XCTestConfigurationFilePath"] != nil { return true }
+        if environment["XCTestBundlePath"] != nil { return true }
+        if environment["TESTING_LIBRARY_VERSION"] != nil { return true }
+        if environment["SWIFT_TESTING"] != nil { return true }
+        if environment["SWIFT_TESTING_ENABLED"] != nil { return true }
+        let processName = ProcessInfo.processInfo.processName
+        if processName == "swiftpm-testing-helper" { return true }
+        return ProcessInfo.processInfo.arguments.contains { argument in
+            argument.contains("xctest") || argument.contains("swift-testing")
+        }
     }
 }

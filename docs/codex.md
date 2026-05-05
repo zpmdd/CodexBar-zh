@@ -43,10 +43,13 @@ Usage source picker:
 - Uses an off-screen `WKWebView` with a per-account `WKWebsiteDataStore`.
   - Store key: deterministic UUID from the normalized email.
 - WebKit store can hold multiple accounts concurrently.
+- WebView navigation and same-origin dashboard API preflights use a Chrome-like browser User-Agent. This keeps
+  Cloudflare/session cookies imported from Chrome aligned with the request fingerprint.
 - Cookie import (Automatic mode, when WebKit store has no matching session or login required):
-  1) Safari: `~/Library/Cookies/Cookies.binarycookies`
-  2) Chrome/Chromium forks: `~/Library/Application Support/Google/Chrome/*/Cookies`
+  1) Chrome/Chromium profiles: `~/Library/Application Support/Google/Chrome/*/Cookies`
+  2) Safari: `~/Library/Cookies/Cookies.binarycookies`
   3) Firefox: `~/Library/Application Support/Firefox/Profiles/*/cookies.sqlite`
+  4) Other Chromium variants from the shared browser import order.
   - Domains loaded: `chatgpt.com`, `openai.com`.
   - No cookie-name filter; we import all matching domain cookies.
 - Cached cookies: Keychain cache `com.steipete.codexbar.cache` (account `cookie.codex`, source + timestamp).
@@ -66,6 +69,21 @@ Usage source picker:
   - Credits purchase URL (best-effort).
 - Errors surfaced:
   - Login required or Cloudflare interstitial.
+
+### OpenAI web troubleshooting
+
+- Missing session/weekly hover chart and the credits card message `OpenAI web dashboard returned an empty page` share the same
+  root path: dashboard extras are unavailable, so `usageBreakdown` is empty and the menu has no hosted chart submenu.
+- If Chrome can open `https://chatgpt.com/codex/settings/usage`, make sure macOS has allowed CodexBar access to
+  `Chrome Safe Storage`; automatic import now tries Chrome before Safari.
+- Safari may prove account identity through `/backend-api/me` but still fail the hidden WebView dashboard scrape on some
+  machines. Keep Safari as a fallback, but prefer Chrome when debugging Codex OpenAI web extras.
+- A repeated Keychain prompt usually means browser cookie import is being retried after a failed dashboard scrape. Once a
+  Chrome cookie is imported and cached successfully, the Keychain cache should reduce repeated prompts.
+- `Codex login failed: missing field command in mcp_servers.figma` is not a dashboard problem. It comes from an invalid
+  local Codex CLI config block in `~/.codex/config.toml`; remove or correct the URL-only `[mcp_servers.figma]` block.
+- `unknown variant xhigh` from `codex login status` means the installed Codex CLI does not support that reasoning value.
+  Use `high` in `~/.codex/config.toml` for CLI compatibility.
 
 ### Codex CLI RPC (default CLI fallback)
 - Launches local RPC server: `codex -s read-only -a untrusted app-server`.

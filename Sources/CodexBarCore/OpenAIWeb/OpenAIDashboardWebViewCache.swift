@@ -458,6 +458,7 @@ final class OpenAIDashboardWebViewCache {
         }
 
         let webView = WKWebView(frame: .zero, configuration: config)
+        webView.customUserAgent = OpenAIDashboardFetcher.browserUserAgent
         let host = OffscreenWebViewHost(webView: webView)
         return (webView, host)
     }

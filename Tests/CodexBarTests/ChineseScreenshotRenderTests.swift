@@ -67,6 +67,7 @@ struct ChineseScreenshotRenderTests {
             copilotTokenStore: InMemoryCopilotTokenStore(),
             tokenAccountStore: InMemoryTokenAccountStore())
         settings.hidePersonalInfo = true
+        settings.appLanguage = .simplifiedChinese
         settings.mergeIcons = true
         settings.switcherShowsIcons = true
         settings.menuBarShowsBrandIconWithPercent = true
@@ -153,7 +154,7 @@ struct ChineseScreenshotRenderTests {
         ]
     }
 
-    private static func render<Content: View>(_ view: Content, size: CGSize, to url: URL) throws {
+    private static func render(_ view: some View, size: CGSize, to url: URL) throws {
         let host = NSHostingView(rootView: view
             .environment(\.colorScheme, .dark)
             .environment(\.locale, Locale(identifier: "zh-Hans")))

@@ -127,8 +127,8 @@ public enum UsageFormatter {
         guard let exchangeRate,
               exchangeRate.baseCurrency.uppercased() == "USD",
               exchangeRate.quoteCurrency.uppercased() == "CNY",
-              exchangeRate.rate > 0 else
-        {
+              exchangeRate.rate > 0
+        else {
             return usd
         }
         return "\(self.cnyString(value * exchangeRate.rate)) · \(usd)"
